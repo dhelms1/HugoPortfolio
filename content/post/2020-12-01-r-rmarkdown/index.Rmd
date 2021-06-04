@@ -1,0 +1,22 @@
+---
+title: "Python Interface with R"
+author: "Derek Helms"
+date: 2021-06-04T21:13:14-05:00
+categories: ["Python"]
+tags: ["R Markdown", "Python", "Reticulate"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+library(reticulate)
+```
+
+# Python Interface with R
+
+This is a test for interfacing Python with RMarkdown using the [**Reticulate**](https://rstudio.github.io/reticulate/) package.
+
+```{python, message=FALSE, eval=FALSE}
+import tensorflow as tf
+```
+
+- *NOTE*: The above code chunk is displayed but not executed, which is what we want in order to avoid rerunning previously executed code (images will be inputted for graphs and results).
