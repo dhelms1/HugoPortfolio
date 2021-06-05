@@ -1,0 +1,31 @@
+theme = "tale-hugo"
+baseURL = "http://example.org/"
+languageCode = "en-us"
+title = "Derek Helms"
+
+[menu]
+  [[menu.main]]
+    identifier = "linkedin"
+    name = "LinkedIn"
+    title = "LinkedIn"
+    url = "https://www.linkedin.com/in/derek-helms"
+    weight = 0
+  [[menu.main]]
+    identifier = "github"
+    name = "GitHub"
+    title = "GitHub"
+    url = "https://github.com/dhelms1"
+    weight = 0
+  [[menu.main]]
+    identifier = "about"
+    name = "About"
+    title = "About"
+    url = "/about/"
+    weight = 0
+  [[menu.main]]
+    identifier = "posts"
+    name = "Posts"
+    title = "Posts"
+    url = "/post/"
+    weight = 0
+    
