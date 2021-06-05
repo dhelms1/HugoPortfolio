@@ -1,5 +1,4 @@
 theme = "tale-hugo"
-baseURL = "http://example.org/"
 languageCode = "en-us"
 title = "Derek Helms"
 
