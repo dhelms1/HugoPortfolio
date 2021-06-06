@@ -2,6 +2,11 @@ theme = "tale-hugo"
 languageCode = "en-us"
 title = "Derek Helms"
 
+pygmentsUseClasses = false
+pygmentsCodeFences = true
+pygmentsCodefencesGuessSyntax = true
+pygmentsStyle = "pygments"
+
 [menu]
   [[menu.main]]
     identifier = "linkedin"
