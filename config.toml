@@ -7,22 +7,38 @@ pygmentsCodeFences = true
 pygmentsCodefencesGuessSyntax = true
 pygmentsStyle = "pygments"
 
+[taxonomies]
+  tag = "tags"
+
 [menu]
   [[menu.main]]
     identifier = "linkedin"
     name = "LinkedIn"
     title = "LinkedIn"
     url = "https://www.linkedin.com/in/derek-helms"
-    weight = 0
+    weight = 5
   [[menu.main]]
     identifier = "github"
     name = "GitHub"
     title = "GitHub"
     url = "https://github.com/dhelms1"
-    weight = 0
+    weight = 4
   [[menu.main]]
     identifier = "about"
     name = "About"
     title = "About"
     url = "/about/"
-    weight = 0
+    weight = 1
+  [[menu.main]]
+    identifier = "projects"
+    name = "Projects"
+    title = "Projects"
+    url = "/tags/projects/"
+    weight = 2
+  [[menu.main]]
+    identifier = "personal"
+    name = "Personal"
+    title = "Personal"
+    url = "/tags/personal/"
+    weight = 3
+    

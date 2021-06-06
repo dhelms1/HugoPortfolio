@@ -4,6 +4,7 @@ banner: images/stroke_banner.jpg
 author: Derek Helms
 date: '2021-03-21'
 slug: strokeprediction
+tags: [Projects]
 description: In this project I compare the performance of Statistical and Machine Learning models for predicting whether or not a patient will have a stroke. The data set has a large class imbalance, so comparing the performance of sampling methods with a Generalized Linear Model vs. an Ensemble Model that performs sampling while training is the focus of this project.
 ---
 

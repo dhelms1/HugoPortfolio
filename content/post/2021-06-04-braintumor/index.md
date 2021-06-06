@@ -4,6 +4,7 @@ banner: images/tumor_banner.jpg
 author: Derek Helms
 date: '2021-05-10'
 slug: braintumor
+tags: [Projects]
 description: In this project I use TensorFlow and Amazon SageMaker to build, train, and deploy a deep learning model that can accurately classify MRI scans of 4 different types of brain tumors. The main emphasis of this project is working with SageMaker to deploy a TensorFlow model and use it for real world data, as well as learning the interactions between cloud and code.
 ---
 
