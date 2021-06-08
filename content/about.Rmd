@@ -2,7 +2,6 @@
 title: "About Myself"
 author: "Derek Helms"
 description: A brief introduction about myself and the purpose of this website.
-tags: "Personal"
 ---
 
 <img src="/about_img.png" width="250" height="250">

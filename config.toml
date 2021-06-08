@@ -36,9 +36,9 @@ pygmentsStyle = "pygments"
     url = "/tags/projects/"
     weight = 2
   [[menu.main]]
-    identifier = "personal"
-    name = "Personal"
-    title = "Personal"
-    url = "/tags/personal/"
+    identifier = "exploration"
+    name = "Exploration"
+    title = "Exploration"
+    url = "/tags/exploration/"
     weight = 3
     

@@ -1,5 +1,5 @@
 ---
-title: 'Stroke Prediction: Battle of the Learning Methods'
+title: 'Stroke Prediction: Battle of the Learning Methods [FINISHED BUT NOT YET ADDED TO BLOG]'
 banner: images/stroke_banner.jpg
 author: Derek Helms
 date: '2021-03-21'
