@@ -1,5 +1,5 @@
 ---
-title: "#tidytuesday: Tv\'s Golden Age"
+title: "#tidytuesday: TV\'s Golden Age"
 author: Derek Helms
 date: '2021-06-08'
 slug: tvgoldenage
@@ -12,7 +12,7 @@ description: "In this mini-project, I explore my first data set for the TidyTues
 ![](img/header.jpg)
 
 # Introduction
-Welcome! This is the first of many posts for the #tidytuesday data exploration project in which I explore a small data set with no goal of creating a model but strictly to become more familiar with R and packages such as *dplyr, tidyverse,* & *ggplot*. In this week, we'll explore the IMDb data set that recorded information such as seasons, date, average rating, and shares for TV dramas from 1990 to 2018. The data originated from the [Tidy Tuesday GitHub](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-01-08) repository.
+Welcome! This is the first of many posts for the **#tidytuesday** data exploration project in which I explore a smaller data set with no goal of creating a model but strictly to become more familiar with R and packages such as *dplyr, tidyverse,* & *ggplot*. In this week, we'll explore the IMDb data set that recorded information such as seasons, date, average rating, and shares for TV dramas from 1990 to 2018. The data originated from the [Tidy Tuesday GitHub](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-01-08) repository.
 
 
 # Initial Exploration
@@ -23,7 +23,7 @@ Reading in the data and displaying the first few rows, we can see:
 ``` R
 tv.data <- tv.data %>% select(-titleId) # Drop 'titleId' Column
 
-length(unique(tv.data$title)) # 868
+length(unique(tv.data$title)) # 868 unique shows
 ```
 ![](img/summary.jpg)
 
@@ -54,7 +54,7 @@ kable(t(tv.data[1,]), col='Observation #1')
 ```
 ![](img/ymd.jpg)
 
-I decided to split the date feature into 3 subset features: *year*, *month*, and *day* using the [lubridate](https://lubridate.tidyverse.org/) package. I also reordered the columns to put these after the date feature instead of the end of the data frame cause my OCD didn’t like how it looked…
+I decided to split the date feature into 3 subset features: *year*, *month*, and *day* using the [lubridate](https://lubridate.tidyverse.org/) package. This will make exploration easier for me later on where I can group by year or month rather than date strings. I also reordered the columns to put these after the date feature instead of the end of the data frame cause my OCD didn’t like how it looked…
 
 ### Year
 ``` R
@@ -66,7 +66,7 @@ ggplot(tv.data, aes(x=factor(year))) + geom_bar(fill= "#FF6666") +
 ```
 ![](img/year.jpg)
 
-It seems that the occurrence for years is extremely right skewed, almost growing exponentially (the last date is 2018-10-10, so we are missing around 2.5 months of data for 2018). The average rating for each year to see if it increases/decreases as more shows seem to be coming out (maybe more isn’t always better).
+It seems that the occurrence for years is extremely right skewed, almost growing exponentially (the last date is 2018-10-10, so we are missing around 2.5 months of data for 2018). We'll now want to explroe the average rating for each year to see if it increases/decreases as more shows seem to be coming out (maybe more isn’t always better).
 
 ``` R
 tv.data %>% select(year, av_rating) %>% group_by(year) %>% 
@@ -82,7 +82,7 @@ tv.data %>% select(year, av_rating) %>% group_by(year) %>%
 ```
 ![](img/av_yearly.jpg)
 
-Looking at the average rating for each year, it seems the values range from 7.602625 (in 2000) to 8.200624 (in 2004). For the most part, there are no standout years in which extremely high/low ratings were present. For the most part, it seems that shows prior to 2001 had lower average ratings (all below 8) and almost all shows after 2001 had above an average rating of 8 (excluding 2007 which had a 7.93).
+Looking at the average rating for each year, it seems the values range from 7.60 (in 2000) to 8.20 (in 2004). For the most part, there are no standout years in which extremely high/low ratings were present. For the most part, it seems that shows prior to 2001 had lower average ratings (all below 8) and almost all shows after 2001 had above an average rating of 8 (excluding 2007 which had a 7.93). If we think of the above graph as being split into the usual graph quadrants (I, II, III, IV), we can see that the majority of the data after 2001 is in quadrant I and all data prior to 2001 is in quadrant III.
 
 ### Month
 ``` R
@@ -144,7 +144,7 @@ data.frame(genres=all_of(genres.types),
 ```
 ![](img/av_genre_rate.jpg)
 
-I’m not gonna say I called this one but look at “Reality-TV”… If you’ve ever seen an episode of Keeping up with the Kardashians or Real Housewives of any major city in America then you’d agree with that number. But besides that, it seems that most fall into the average range of 7.5 to 8.5 (a more reasonable number). It seems that surprisingly, TV shows relating to “War” are the highest rated, followed by “Sports” and “History”. Near the bottom, but not nearly as bad as Reality-TV, we have “Musical” and “Documentaries” coming in last place.
+I’m not gonna say I called this one but just look at “Reality-TV”… If you’ve ever seen an episode of *Keeping up with the Kardashians* or *Real Housewives of any major city in America* then you’d agree with that number. But besides that, it seems that most fall into the average range of 7.5 to 8.5 (a more reasonable number). It seems that surprisingly, TV shows relating to “War” are the highest rated, followed by “Sports” and “History”. Near the bottom, but not nearly as bad as Reality-TV, we have “Musical” and “Documentaries” coming in last place.
 
 # Show Exploration
 
@@ -195,6 +195,8 @@ tv.data %>% select(year, share) %>% group_by(year) %>%
 My question from the previous section was correct: It does seem that as we progress through the years, people are sharing shows less. This is an interesting finding since it would seem today we have easier ways to share shows: social media, texting, etc. Maybe with all these new inventions there is less human interaction, but who knows.
 
 # Conclusion
+![](img/conc.jpg)
+
 Overall, the findings from this project were very interesting. Seeing how more shows began to occur as the years increased was expected, with platforms such as YouTube, Netflix, Hulu, etc. And average rating increasing as years increased was also not a suprise, as I expected the more "modern" shows would have slightly better overall production. However, it was interesting to see that the top 3 shows with the highest average rating were all from the 1990's as well as the top 4 shared shows being from the same era. With average shares decreasing as the years increased, could this be due to more shows being produced and therefore less average shares per show? Further exploration will be needed to answer this question, but our main question here is "Does TV have a golden age?". From the data, if we used average yearly rating we could say yes; and it's currently happening right now. However, if we used yearly shares and highest rated shows then we could also say yes; during the 1990's shows were at their peak of being talked about among people and could be considered the Golden Age of television. This question is up to the individual to answer, and it all depends on what one would consider *The Golden Age*. 
 
 
