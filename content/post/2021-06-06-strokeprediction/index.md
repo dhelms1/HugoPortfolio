@@ -145,9 +145,6 @@ data.drop(['smoking_status', 'child', 'youth', 'adult', 'senior', 'weight_class'
 Looking at the above matrix it seems that stroke has the highest correlation with the following features: age (0.25), age_over_45 (0.21), heart_disease (0.14), hypertension (0.13), and avg_glucose_level (0.13). There are other features that are correlated with stroke that we engineered, but are lower than the ones listed previously. Now that our data is processed and a subset of the features are kept, we can begin the modeling section.
 
 
-
-
-
 # Modeling
 ### Brief Overview of Data Formatting
 For the **Statistical Modeling** section, the data was reformatted in two ways to accommodate the large class imbalance (around 20x more observations of "No Stroke" compared to "Stroke"):
@@ -165,6 +162,137 @@ For the **Ensemble Modeling** section, the data was reformatted in the following
 - An important note is that the extra observations from the majority class (after being undersampled) in the testing data were added back into the training data so that we had more data to train on. This was due to the algorithms being able to handle class imbalance (so more majority observations would not have a negative effect).
 
 ## Statistical Modeling
-*To be fileld in...*
+Using the [StatsModels](https://www.statsmodels.org/v0.10.1/) module, I created a Generalized Linear Model based on the Logistic (Binomial) family. Before the actual model can be built, we first need to set up the data splits and sampling methods described above. The following code took care of this:
 
+``` Python
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+over_sampler = over_sampling.SMOTE(sampling_strategy=0.75, random_state=42)
+under_sampler = under_sampling.NearMiss(sampling_strategy=0.75, version=2)
+X_train, y_train = over_sampler.fit_resample(X_train, y_train)
+X_test, y_test = under_sampler.fit_resample(X_test, y_test)
+
+# Create data frame for GLM model (X_train & y_train in same data frame)
+data_glm = X_train.copy()
+data_glm['stroke'] = y_train
+```
+![](img/GLM_data.jpg)
+
+As we can see, by oversampling we were able to bring up the minority class observations to approximately 2500, which gave us our 4:3 desired ratio (again, no real reason why I chose this but let's just go with it). Testing data has also been reduced down to the desired 3:4 ratio. Now that we have our data formatted correctly, we can begin to build our GLM:
+
+``` Python 
+response_var = 'stroke ~ ' # Fit with all variables
+explanatory_vars = ' + '.join(X_train.columns.values)
+formula = response_var + explanatory_vars
+
+model = sm.GLM.from_formula(formula, family=sm.families.Binomial(), data=data_glm)
+result = model.fit()
+result.summary()
+```
+![](img/GLM_init.jpg)
+
+From our initial model, we can see that almost all features are statistically significant (except for *over_weight* which was a feature I had previously created from *bmi*). We can now use the above model to predict on the test data, and we get the following initial (base model) results:
+
+![](img/GLM_result_init.jpg)
+
+Okay, so not bad. But I'm pretty confident that we can improve these results. How you may ask? Unlike machine learning models, we can use Grid or Random Search with a bunch of hyperparameters. Statistical models require a little more finesse. And by finesse I mean stepwise selection to find the best combination of these features. I'll evaluate these models based on their BIC, Recall, and F-Beta score (beta=0.85 provided the best results).  
+
+> **NOTE**: All 3 stepwise methods resulted in the exact same model, with the same coefficient & p-values. So forward selection will explain in a bit more detail, and then exhaustive/backwards will just be a quick overview of the code and idea behind them.
+
+### Foward Stepwise Feature Selection 
+``` Python 
+def fitModel(feature_subset):
+    response_var = 'stroke ~ '
+    explanatory_vars = ' + '.join(X_train[list(feature_subset)].columns.values)
+    formula = response_var + explanatory_vars
+    model = sm.GLM.from_formula(formula, family=sm.families.Binomial(), data=data_glm)
+    result = model.fit()
+    y_preds = round(result.predict(X_test[list(feature_subset)]))
+    model_recall = recall_score(y_test, y_preds)
+    model_fbeta = fbeta_score(y_test, y_preds, beta=0.85)
+    return {'model': result, 'bic': result.bic, 'recall': model_recall, 
+            'fbeta': model_fbeta, 
+            'features' : X_train[list(feature_subset)].columns.values}
+            
+def forwardSelection(predictors):
+    start = time.time()
+    remaining_predictors = [p for p in X.columns if p not in predictors]
+    results = []
+    for p in remaining_predictors:
+        results.append(fitModel(predictors+[p]))
+    
+    models = pd.DataFrame(results)
+    best_model = models.sort_values(by='fbeta', ascending=False).iloc[0,:]
+    print("Processed", models.shape[0], "models on", len(predictors)+1, 
+          "predictors in", round(time.time()-start,3), "seconds.")
+    
+    return best_model.values
+```
+
+Okay so a good amount of code just thrown at you there. The general idea for **forward selection** is that we iterate over all of the features in the training data set with each iteration adding the coefficient that improves our model the best. For each iteration, we try all features but only return a single model that had the highest F-Beta score, and append this to our list of final models. In total, we will have 10 models (given that we have 10 features) which we then plot and choose a final model from. 
+
+![](img/stepwise.jpg)
+
+From the above graphs, we can see that the model using 4 features resulted in the highest Recall & F-Beta score (BIC is in the middle, but this model gave the best results). To save space I'll put the results from the model summary and confusion matrix for the test set in the final model section since all 3 stepwise methods resulted in the same model/scores.
+
+
+### Exhaustive Stepwise Feature Selection
+``` Python
+def exhaustiveSearch(k):
+    start = time.time()
+    results = []
+    for combo in itertools.combinations(X_train, k):
+        results.append(fitModel(combo))
+    
+    models = pd.DataFrame(results)
+    best_model = models.sort_values(by='fbeta', ascending=False).iloc[0,:]
+    print("Processed", models.shape[0], "models on", k, 
+          "predictors in", round(time.time()-start,3), "seconds.")
+    
+    return best_model.values
+```
+The general idea for **exhaustive selection** is that we try every combinations of predictors given a certain length (in this case, 1 through 10) and return the best model. For example, in step 2 we try every combination of 2 features and so on. *Note: forward search took around 1 second for all 10 steps, where exhaustive search took around 25 seconds - for a much larger model this would need to be considered before using.*
+
+### Backwards Stepwise Feature Selection
+``` Python 
+def backward(predictors):
+    start = time.time()
+    results = []
+    for combo in itertools.combinations(predictors, len(predictors)-1):
+        results.append(fitModel(combo))
+    
+    models = pd.DataFrame(results)
+    best_model = models.sort_values(by='fbeta', ascending=False).iloc[0,:]
+    print('Processed ', models.shape[0], 'models on', len(predictors)-1, 
+          "predictors in", round(time.time()-start,3), 'seconds.')
+    
+    return best_model.values
+```
+The final method is **backwards selection**, which will begin with all of our features in the data set, and each iteration it will drop the least significant coefficient. So we start with 10 features, and work our way down to 1 at the end.
+
+### Final Statistical Model
+``` Python
+models_bwd_flipped.loc[4]['Model'].summary() # final model
+```
+![](img/GLM_final.jpg)
+
+Our final model! Although I'm showing the model from the Backward selection, both the forward/exhaustive models also had the same 4 features as their top performer (so just think of the above as the general winner for each method). All coefficients are now statistically significant, and to my surprise some of what I thought were key features have been dropped. *Hypertension, heart disease, smoking,* and *average glucose level* are key indicators for stroke but they were all dropped? Blows my mind, but our model seemed to perform much better without them and the results below show that:
+
+![](img/GLM_result_final.jpg)
+
+Okay, so what improvements do we have over the base model:
+
+- True Negatives increased by 2, while False Positives decreased by 2 (less people classified as stroke that did not have a stroke). :star:
+- False Negative decreased by 21, while True Positives increased by 21 (more people classified as stroke that actually had a stroke). :star:
+- Precision increased from 57% to 66%.
+- Recall increased from 58% to 82% (this was the most important evaluation metric to improve).
+- Accuracy increased from 63% to 74%.
+
+*Note: the above came from the classification report, see either the README.md or stroke_prediction.ipynb*.
+
+A huge improvement! The changes marked by the :star: were our main metrics to improve and we successfully did. There's still room to improve (False Positives could be lowered a bit but this was a trade off to increase Recall) but this is a strong model. However, will it be strong enough to stay champion? Let's move onto the ensemble modeling and see.
+
+
+## Ensemble Modeling
+*To be filled in...*
 
