@@ -1,5 +1,5 @@
 ---
-title: 'Stroke Prediction: Battle of the Learning Methods [Currently Filling Post]'
+title: 'Stroke Prediction: Battle of the Learning Methods'
 banner: images/stroke_banner.jpg
 author: Derek Helms
 date: '2021-03-21'
@@ -294,5 +294,127 @@ A huge improvement! The changes marked by the :star: were our main metrics to im
 
 
 ## Ensemble Modeling
-*To be filled in...*
+For this section I initially planned on using the Scikit-Learn library, but after some research I found another one that seemed to work a bit better for my problem: [ImBalanced-Learn](https://imbalanced-learn.org/stable/). This library is build on Scikit-Learn put is designed mainly for classification with imbalanced classes. 3 initial models will be fit, cross-validated on all of the data and had the following scores:
+
+![](img/ML_init_models.jpg)
+
+- [BalancedRandomForestClassifier](https://imbalanced-learn.org/stable/references/generated/imblearn.ensemble.BalancedRandomForestClassifier.html) - A balanced random forest classifier that under-samples each bootstrap sample to balance our classes.
+- [RUSBoostClassifier](https://imbalanced-learn.org/stable/references/generated/imblearn.ensemble.RUSBoostClassifier.html) - An AdaBoost algorithm that performs random under-sampling at each iteration to balance classes.
+- [BalancedBaggingClassifier](https://imbalanced-learn.org/stable/references/generated/imblearn.ensemble.BalancedBaggingClassifier.html) - A bagging classifier that implements data balancing at fit time.
+
+This may be a surprise, but the model chosen to continue with for hyperparameter tuning is the **BalancedRandomForestClassifier**. Although it had the lowest accuracy, precision, and F-Beta score it also had the highest recall (which is what we want). I believe with changes to our data set and model parameters, we will be able to improve these results.
+
+### Data Set Up
+Now that we have our initial model set up, we will want to create the training and testing splits. Unlike the previous section, we will want to keep the training set imbalanced but balance the testing set to have the same ratio used to evaluate the GLM, which is 4:3.
+
+> *NOTE: I now wonder if these results differed since we used different testing sets. The Ensemble Model testing set was smaller and had different observations, so this could be affecting the results.*
+
+``` Python
+def sampled_data_split(data):
+    stroke_obs = data[data.stroke == 1]
+    no_stroke_obs = data[data.stroke == 0]
+
+    sample_size = np.ceil(0.2 * len(stroke_obs))
+    stroke_sample = stroke_obs.sample(n=int(sample_size), random_state=42, axis=0)
+    stroke_extra = pd.concat([stroke_obs, stroke_sample]).loc[stroke_obs.index.
+                                                              symmetric_difference(
+                                                                stroke_sample.index)]
+    sample_size = np.ceil(len(stroke_sample)*1.5)
+    no_stroke_sample = no_stroke_obs.sample(n=int(sample_size), random_state=42, 
+                                            axis=0)
+    no_stroke_extra = pd.concat([no_stroke_obs,
+                                 no_stroke_sample]).loc[no_stroke_obs.index.
+                                                        symmetric_difference(
+                                                            no_stroke_sample.index)]
+
+    train_set = shuffle(pd.concat([stroke_extra, no_stroke_extra], axis=0))
+    test_set = shuffle(pd.concat([stroke_sample, no_stroke_sample], axis=0))
+    X_train, y_train = train_set.drop('stroke', axis=1), train_set.stroke
+    X_test, y_test = test_set.drop('stroke', axis=1), test_set.stroke
+    return X_train, X_test, y_train, y_test
+```
+![](img/ML_data.jpg)
+
+### Base Model
+
+
+``` Python
+model = BalancedRandomForestClassifier(random_state=42, class_weight='balanced')
+model = model.fit(X_train, y_train)
+y_preds = model.predict(X_test)
+```
+![](img/ML_results_init.jpg)
+
+- Accuracy: 81%
+- Precision: 71%
+- Recall: 88%
+
+Okay, so already our model seems to be performing better than the GLM. This isn't a huge surprise, I expected this to happen for the most part. But now that we have our base model, let's see if we can increase these scores. 
+
+### Hyperparameter Tuning
+*SPOILER*: The base model performed better than any of the tuned models below. Just in case you wanted to skip over the section (I don't blame you, I probably wouldn't make it through half this article with my attention span) the results seemed to slightly decrease with the tuned models. Two different methods were used in an attempt to improve the model: *GridSearchCV* and *Exhaustive Feature Selection*.
+
+#### GridSearchCV
+``` Python
+parameters = {'n_estimators': [25, 50, 75, 100, 125],
+              'criterion': ['gini', 'entropy'],
+              'max_features': ['auto', 'log2', None],
+              'sampling_strategy': ['auto', 'all', 0.7],
+              'class_weight': ['balanced', 'balanced_subsample']}
+
+scoring_params = {'precision': make_scorer(precision_score), 
+                  'recall': make_scorer(recall_score), 
+                  'fbeta': make_scorer(fbeta_score, 1.25)}
+
+hpt_model = BalancedRandomForestClassifier(random_state=42)
+rs_cv = GridSearchCV(hpt_model, parameters, verbose=1, scoring=scoring_params, 
+                     refit='fbeta', n_jobs=-1)
+start = time.time()
+search = rs_cv.fit(X_train, y_train)
+search.best_params_
+# {'class_weight': 'balanced',  
+#  'criterion': 'gini',  
+#  'max_features': 'auto',  
+#  'n_estimators': 25,  
+#  'sampling_strategy': 'auto'}
+```
+ 
+Using the above parameters, a new model was fit and used to predict on the data. To save room I won't include the confusion matrix or classification report, but the main take away is that True Negatives decreased by 1 and False Positives increased by 1 (slightly worse than base model). However, the model increased it's prediction speed by 2x which could be considered if that was the goal for the product (slightly worse results for much faster performance).
+
+#### Exhaustive Feature Selection
+*NOTE: Here we used the model from above to try and improve the results since it had similar results as the base model but faster performance).*
+``` Python
+efs = EFS(search.best_estimator_,
+          min_features=2,
+          max_features=7,
+          scoring=make_scorer(fbeta_score, beta=1.25),
+          cv=5,
+          n_jobs=-1)
+
+efs = efs.fit(X_train, y_train)
+list(X_train.iloc[:, list(efs.best_idx_)].columns)
+# ['age', 'hypertension', 'avg_glucose_level', 'bmi', 'smokes', 'never_smoked']
+```
+
+Again, a new model was fit using only the above features but this resulted in even worse performance. Our True Negatives decreased by 1 and False Positives increased by 1, as well as False Negatives increasing by 2 and True Positives decreasing by 2. From this, our base model seems to have the best performance and will be our final model.
+
+### Final Model
+Okay, so this was one of those cases where hyperparameter tuning didn't seem to benefit our model very much (actually it seemed to hurt our model more than anything). Our base model seemed to perform the best out of all 3 models, and the features had the following importance:
+
+![](img/ML_feat_import.jpg)
+
+An important note is that the *age*, *bmi*, and *avg_glucose_levels* were not normalized and all other features had discrete values in the range [0,1], but normalizing the inputs resulted in the same feature importance but with worse performance.
+
+
+## Conclusion
+Comparing the statistical and ensemble models, we can see that the ensemble model seems to be performing better (although not be a large margin). We have the following difference based on the final models for both types:
+
+- **Accuracy**: Ensemble model has a 7% advantage.
+- **Precision**: Ensemble model has a 5% advantage.
+- **Recall**: Ensemble model has a 6% advantage.
+
+An important note is that the two model types were trained and tested on different data. The statistical model had oversampling of the minority class for the training data in order to balance it since we could not handle the imbalance within the model itself (but the testing data was undersampled). The ensemble model had regular training data (not balanced) but the testing data was undersampled and slightly smaller (extra observations left over from the undersampling were also added back into training since imbalanced data was not a concern).
+
+Overall, the ensemble model seems to be slightly stronger in all evaluation aspects. The computational speeds were similar for both models. Places to improve upon for our models would to be to try and get the data splits to be more similar in order to have more validity to our statement of the stronger model.
+
 
