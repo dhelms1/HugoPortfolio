@@ -1,0 +1,10 @@
+---
+description: A brief introduction about myself and the purpose of this website.
+menu:
+  main:
+    pre: user
+    weight: -90
+title: About
+---
+
+Hello! I'm currently a student at Cal State University, Chico pursuing a Bachelor of Science in Mathematics with a focus on statistics. My main area of concentration is in machine learning, working on projects including image classification, sentiment analysis, and statistical modeling. This website will be a place for me to share my work publicly with more in depth explanation and exploration compared to my GitHub. I'll also be posting about my journey throughout my Summer Undergraduate Research Internship with CSU Chico. Thank you for taking the time to look at my website and I hope you find something that interests you!

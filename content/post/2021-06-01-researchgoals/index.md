@@ -3,10 +3,9 @@ title: 2021 Summer Undergraduate Research Goals
 author: Derek Helms
 date: '2021-06-01'
 slug: researchgoals
-banner: images/goals_banner.jpg
-categories: []
+image: img/banner.png
 tags:
-  - Exploration
+  - Personal
 description: A brief overview of what I hope to accomplish during my 10 week research internship with the CHC (Center for Healthy Communities). This includes Personal, Academic, and Research Development skills that I aim to learn throughout this experience and how to carry them forward into higher education.
 ---
 
@@ -15,7 +14,7 @@ description: A brief overview of what I hope to accomplish during my 10 week res
 # Introduction
 6/1/2021 marks the first day of my Research Intership with the CHC (even though I'm writing this almost 2 weeks later) and I have some mixed emotions about how I feel about it. I'm not saying I don't like the program (it's quite the opposite), I'm beyond grateful for the opportunity. But I am nervous. Will I be able to keep up with everyone whose already been working on the project? What if I don't deliver everything I need to at the end of the program? Am I going to be able to learn everything or will I fall behind? There's a lot of questions I keep asking myself, the programs use of R and Data Analysis are new to me. I work on Deep Learning projects using Python (*quick shameless plug: go check out some other posts on my website about these projects*), and there isn't much analysis for images or text data (some, but not to the extent of a survey with over 250 features). All these new methodologies have me feeling a little overwhelmed, but I'm also excited. 
 
-I love learning (I've been in college for almost 6 years so I guess I better love it) and this is a summer of learning, but without the stress of grades. No midterms, no finals, no suprise quizzes on the one topic you decided to skip reading. I'm excited to see where the program takes me and how I will develop both as a person and a researcher.
+I love learning (I've been in college for almost 6 years so I guess I better love it) and this is a summer of learning, but without the stress of grades. No midterms, no finals, no surprise quizzes on the one topic you decided to skip reading. I'm excited to see where the program takes me and how I will develop both as a person and a researcher.
 
 ## What exactly is the Internship?
 For the summer, I'll be working on the second version of the Basic Needs Student Success Survey (BNS3) and helping to prepare the third. The first version was aimed towards Chico State students, the second was 3 CSU schools, and the third will be aimed towards getting it distributed across California. Pulled from the [BNS Website](https://chicocalfresh.github.io/bns-website/index.html): 
@@ -42,7 +41,7 @@ Speaking of mini-projects, #tidytuesday is the main way I plan to apply what I'm
 
 > A weekly data project aimed at the R ecosystem. As this project was borne out of the `R4DS Online Learning Community` and the `R for Data Science textbook`, an emphasis was placed on understanding how to summarize and arrange data to make meaningful charts with `ggplot2`, `tidyr`, `dplyr`, and other tools in the `tidyverse` ecosystem.
 
-No modeling, no data processing, no evaluation. Just pure Data Exploration. Given that one of the main purpose's of my research project is EDA, this is the perfect opportunity for me to become familiar with R's libraries for graphing and data transformation. I've already completed one project, discussing [TV's Golden Age](https://derekhelms.netlify.app/post/tvgoldenage/) and whether or not it was real, and I've already learned a ton from it. Usinging `dpylr` for filtering and feature engineering almost made me love it more than Python's version of it. 
+No modeling, no data processing, no evaluation. Just pure Data Exploration. Given that one of the main purpose's of my research project is EDA, this is the perfect opportunity for me to become familiar with R's libraries for graphing and data transformation. I've already completed one project, discussing [TV's Golden Age](https://derekhelms.netlify.app/post/tvgoldenage/) and whether or not it was real, and I've already learned a ton from it. Using **dpylr** for filtering and feature engineering almost made me love it more than Python's version of it. 
 
 My goal is to set aside around an hour per day for Wed/Thrs/Fri in order to work on one of these projects. I'm aiming to completed one every two weeks (so around 4-5 hours working on the actual project an around 1-2 hours creating/posting on this website). Obviously this is just extra work outside of the main project, so some weeks I may not work on TidyTuesday at all if I have too much research work to complete. But I see this as a great opportunity for me to expose myself to the area of EDA which I am not too familiar with. 
 
