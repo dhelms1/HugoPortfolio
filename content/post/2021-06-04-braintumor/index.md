@@ -104,8 +104,7 @@ Both Early Stopping and Learning Rate Reduction are implemented for the model, w
 
 ``` Python
 early_stop = EarlyStopping(monitor='val_loss', mode='min', patience=5)
-lr_reduction = ReduceLROnPlateau(monitor='val_loss', patience = 2, verbose=1, 
-                                 factor=0.2, min_lr=0.000001)
+lr_reduction = ReduceLROnPlateau(monitor='val_loss', patience = 2, verbose=1, factor=0.2, min_lr=0.000001)
 ```
 
 ## Training

@@ -6,5 +6,5 @@ menu:
     pre: archives
     weight: -70
 slug: archives
-title: Archives
+title: Categories
 ---
