@@ -96,22 +96,22 @@ link_df <- data.frame(URL=gpu_links)
 
 I would then read in the previously saved raw data, create a new data frame that matched the current layout of the raw data, and then would row bind the two data frames together into a new raw data set. This would be saved, and the process would be repeated for each page (since they were spaced out). At the end of the process, I ended with 356 total observations with 18 features. However, this data was not at all ready to be used for Exploration or Modeling, and that brings us to the cleaning script.
 
-# RegExp :heart: Data Cleaning: A True Love Story
-Okay so maybe a little dramatic, but there was a good amount of regular expression's used to clean the data. I guess it could be seen as a good thing, but everything read in from the scraping script was put into the data frame as a character. Lot's of which held the numeric values somewhere in a string, such as:
+# Data Cleaning :heart: RegExp
+Okay so maybe not, but there was a good amount of regular expression's used to clean the data. I guess it could be seen as a good thing, but everything read in from the scraping script was put into the data frame as a character. Lot's of which held the numeric values somewhere in a string, such as:
 
 > "1241 MHz (OC Mode)1190 MHz (Gaming Mode)1127 MHz (Silent Mode)"
 
-All I wanted was the core clock speed, but this is what I got instead. And yes I thought maybe split it and index, but of course Newegg likes to change the order in which they list the modes so I couldn't do that. But that's besides the current point. I had all the data ready and it's time to get it in the correct format and create any new features that would be necessary. My goal is to maintain around 300 observations (hence why I scraped a little extra) after cleaning up the data.
+All I wanted was the core clock speed, but this is what I got instead. And yes I thought maybe split it and index, but of course Newegg likes to change the order in which they list the modes so I couldn't do that. But that's besides the current point. I had all the data ready and it's time to get it in the correct format and create any new features that would be necessary. My goal is to maintain around 300 observations (hence why I scraped a little extra) after cleaning up the data. Just for ease of reading and my own sanity, I'll split up the cleaning based on the scripts above.
 
 ## GPU Spec Cleaning
-Just for easy of reading and my own sanity, I'll split up the cleaning based on the scripts above. Luckily for me, a few features of this data could be left as characters and didn't need much cleaning (*Brand*, *Model*, *GPU Series*, *GPU*, *Memory Interface*, & *Memory Type*).
+Luckily, a few features of this data could be left as characters and didn't need much cleaning (*Brand*, *Model*, *GPU Series*, *GPU*, *Memory Interface*, & *Memory Type*).
 
 #### Chipset Manufacturer
 ``` r
 raw.data <- raw.data %>%  filter(Chipset.Manufacturer == "AMD" | Chipset.Manufacturer == "ATI" | 
                                  Chipset.Manufacturer == "NVIDIA" | is.na(Chipset.Manufacturer))
 ```
-*To be filled in...*
+Not much cleaning had to be done here, there was only observation that had gotten messed up during scraping that didn't have the correct Chipset Manufacturer. After doing this, we dropped from 356 to 355 observations. 
 
 
 #### Clock Speeds
@@ -128,7 +128,10 @@ raw.data <- raw.data %>%
          OC.Boost.Clock=as.numeric(lapply(tmp, function(x) ifelse(length(x) > 1, max(x), NA)))) %>% 
   select(-tmp) %>% select(Page:Boost.Clock,OC.Boost.Clock,Memory.Size:NumberOfRatings)
 ```
-*To be filled in...*
+So now as I had pointed out earlier, the clock speeds (both core and boost) had been read in as strings. But of course there were multiple values that had to be parsed, which were then extracted into lists of numbers. I decided on the following methods for both the core and boost clock speed features:
+
+- **Base**: taking the minimum gave the the lowest measurement within each row, so I just assumed this as the "base" value.
+- **OC**: the overclock value was a little more tricky. I couldn't just take the max because then GPUs that couldn't be overclocked had their base value in the OC feature. The solution to this was to ensure there was more than one value in the feature, and if true then we took the max (otherwise we filled in with NA).
 
 
 #### Memory Size
@@ -136,7 +139,7 @@ raw.data <- raw.data %>%
 raw.data <- raw.data %>% filter(grepl('GB', Memory.Size) | is.na(Memory.Size)) %>% 
   mutate(Memory.Size=as.numeric(gsub('GB','', Memory.Size)))
 ```
-*To be filled in...*
+Again, not much here in terms of cleaning. There were a few GPUs measured in MB, so these observations were dropped. I then removed the GB from the string and converted all the values to numeric. After doing this, we dropped from 355 to 351 observations. 
 
 
 #### Month/Year
@@ -147,7 +150,7 @@ raw.data <- raw.data %>%
          Year=year(Date.First.Available)) %>% select(-Date.First.Available) %>%
   select(Page:Memory.Type, Month, Year, Price:NumberOfRatings)
 ```
-*To be filled in...*
+Not too much cleaning here either. The original format for the date feature was "Month Day, Year" which needed to be converted to "YYYY-MM-DD" before using the lubridate functions. After this, I created features for the Month and Year it was first available (both numeric) then dropped the original Date feature.
 
 
 ## GPU Rating Cleaning
@@ -156,16 +159,14 @@ raw.data <- raw.data %>%
 raw.data <- raw.data %>% 
   mutate(AvgRating=as.numeric(lapply(AvgRating, function(x) unlist(regmatches(x, gregexpr("[0-9]", x)))[1])))
 ```
-*To be filled in...*
-
+As I had said earlier, the Average Ratings were in a bit of a strange format. Each review had the form `=“[ ] out of 5 eggs”></` where [ ] refers to the Average Rating. To get this value, I used a regular expression to get the first numeric value appearing in the string, unlisted it, and converted to numeric. Voila, we now have our rating in the correct format.
 
 #### Number of Ratings
 ``` r
 raw.data <- raw.data %>% 
   mutate(NumberOfRatings=as.numeric(gsub("\\(|\\)", "", NumberOfRatings)))
 ```
-*To be filled in...*
-
+Another simple cleaning, the number of ratings had parentheses around them and so I substituted either "(" or ")" with "" to remove them and convert to numeric.
 
 ## GPU Pricing Cleaning
 #### Price
@@ -173,8 +174,7 @@ raw.data <- raw.data %>%
 raw.data <- raw.data %>% 
   mutate(Price=as.numeric(lapply(Price, function(x) gsub("\\$", "", unlist(str_split(x, '\\s+'))[1]))))
 ```
-*To be filled in...*
-
+This one was a little tricky, but the Price feature had the following initial format `$1,061.99 (11 Offers)–`. The way I handled this was to split on the space and take the first element from this vector, which I then substituted the "$" for empty space and finally converted the values to numeric. Initially I had wanted to extract the numeric values similar to ratings above, but this also split on the period and I was losing the cent values. 
 
 #### Current Savings
 ``` r
@@ -182,8 +182,7 @@ raw.data <- raw.data %>%
   mutate(tmp=gsub("%", "", regmatches(CurrentSavings, gregexpr("[0-9]*%", CurrentSavings))),
          CurrentSavings=as.numeric(lapply(tmp, function(x) ifelse(rlang::is_empty(x), NA, x)))) %>% select(-tmp)
 ```
-*To be filled in...*
-
+At first this one was also a little tricky, as there were two values formats this feature had: `Save: 14%` and `Sale Ends in 7 Hours - Save: 8%`. So again I couldn't just take the first number, and the solution for this was to look for patterns that were numeric and followed by a % sign. I then removed the % sign, filling non-sale items with NA, and finally converted to numeric.
 
 #### Shipping Fees
 ``` r
@@ -192,8 +191,19 @@ raw.data <- raw.data %>%
          tmp=ifelse(Shipping != "0", regmatches(Shipping, gregexpr("\\$[0-9]*.[0-9]*", Shipping)), Shipping),
          Shipping=as.numeric(gsub("\\$", "", tmp))) %>% select(-tmp)
 ```
-*To be filled in...*
+This one wasn't too bad either, a lot of the GPUs had free shipping (which I replaced with 0 since there was no cost). The general format for this feature was `$39.99 Shipping`, so I used a regular expression to find a pattern of `\\$[0-9]*.[0-9]*`. I then stripped the $ off of the string and converted to numeric.
 
+### Final Cleaning (NA Filtering)
+``` r 
+raw.data <- raw.data %>% mutate(na.percent=round(rowSums(is.na(.))/ncol(.), 4)*100) %>% 
+  filter(na.percent < 30) %>% select(-na.percent)
+```
+The final step. Although I don't have a solid reason as to why I chose to keep all values with less than 30% of their data missing, that's what I chose to do. Doing this took away the most observations of all the data cleaning, pushing us from 351 to 288 final observations.
+
+So a bit under my initial goal, but close enough. We now have 288 observations with 21 features that are ready to be explored.
+
+# Data Exploration
+*To be filled...*
 
 
 
