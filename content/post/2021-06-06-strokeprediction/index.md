@@ -14,6 +14,8 @@ tags:
 description: In this project I compare the performance of Statistical and Machine Learning models for predicting whether or not a patient will have a stroke on a data set that has a large class imbalance. 
 ---
 
+> [**Original GitHub Repository**](https://github.com/dhelms1/stroke_prediction)
+
 # Alright, I'll admit it...
 It sounded a lot cooler in my head. "Battle of the Learning Methods: Statistical vs Machine Learning". Man vs. Machine (well not really, but you get the point). A test of speed, strength, learning, and maybe a little bit of overfitting. Maybe it's just me that's excited about the project, but I finally get to implement what I learn in school against what I do in my free time. This term I took both Sampling Methods and Applied Statistics II, and this brought me to think if I could create a project that implemented the material from those classes and my knowledge of Machine Learning? This project was the answer. 
 

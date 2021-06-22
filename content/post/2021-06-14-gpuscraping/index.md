@@ -12,8 +12,9 @@ tags:
 description: In this project, I use R and its library Rvest to scrape Newegg for information about GPUs including price, rating, and model specs. The main emphasis of this project is Web Scraping, Data Cleaning, and Exploratory Data Analysis.
 ---
 
+> [**Original GitHub Repository**](https://github.com/dhelms1/gpu_scraping)
 
-# So Close... Yet So Far
+# So Close... Yet So Far 
 If you're reading this, then most likely you too have some type of interest in machine learning or data science. And you know that GPUs are amazing for speeding up the processes you do in this fields, especially for Deep Learning. However if you're currently in the market for one of these GPUs, especially the new NVIDIA RTX Series which would be PERFECT for Deep Learning projects, you know how impossible it is to find one of them (special thanks to all the crypto miners and resellers out there). So I figured if I can't have one, might as well scrape Newegg for information on a bunch of different graphics cards and do some Data Analysis right? Not my first though, but it did sound like an interesting project. And although I initially wanted to implement it in Python, I figured this would be a great learning opportunity for R especially given my current internship. And so here we are, scraping Newegg for information on GPUs while I patiently wait for them to become available.
 
 ## Is this Ethical?
@@ -204,8 +205,6 @@ So a bit under my initial goal, but close enough. We now have 288 observations w
 
 # Data Exploration
 *To be filled...*
-
-
 
 
 

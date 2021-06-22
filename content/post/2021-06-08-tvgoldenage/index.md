@@ -12,6 +12,8 @@ tags:
 description: "In this mini-project, I explore my first data set for the TidyTuesday Project. The purpose of these are for experience with EDA using R for my Undergrad Research Program. This weeks data covers TV dramas from 1990 to 2018, and will help us answer the question: \"Is the Golden Age of TV real?\"." 
 ---
 
+> [**Original GitHub Repository**](https://github.com/dhelms1/tidy-tuesday/tree/main/TvGoldenAge)
+
 # Introduction
 Welcome! This is the first of many posts for the **#tidytuesday** data exploration project in which I explore a smaller data set with no goal of creating a model but strictly to become more familiar with R and packages such as *dplyr, tidyverse,* & *ggplot*. In this week, we'll explore the IMDb data set that recorded information such as seasons, date, average rating, and shares for TV dramas from 1990 to 2018. The data originated from the [Tidy Tuesday GitHub](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-01-08) repository.
 

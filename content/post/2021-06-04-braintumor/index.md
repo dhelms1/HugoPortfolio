@@ -14,6 +14,8 @@ tags:
 description: In this project I use TensorFlow and Amazon SageMaker to build, train, and deploy a deep learning model that can accurately classify MRI scans of 4 different types of brain tumors.
 ---
 
+> [**Original GitHub Repository**](https://github.com/dhelms1/brain_tumor)
+
 # Introduction  
 MRI scans are one of the main tools used for analyzing tumors in the human brain. Huge amounts of image data are generated through these scans, which need to be examined by a radiologist, and can be susceptible to diagnosis error due to complex MRI scans. This is where the application of neural networks come in. Through Convolutional Neural Networks, we are able to process these scans in order to extract low level features that can help us correctly classifying and diagnose brain tumors. The purpose of this project is to deploy a deep learning model using Amazon SageMaker that can accurately classify MRI scans of brain tumors into four different categories:  
 
