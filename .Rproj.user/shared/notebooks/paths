@@ -30,6 +30,7 @@ E:/Documents/MLprojects/HugoBlog/themes/hugo-theme-stack/assets/ts/color.ts="7D2
 E:/Documents/MLprojects/HugoBlog/themes/hugo-theme-stack/assets/ts/colorScheme.ts="BF342774"
 E:/Documents/MLprojects/HugoBlog/themes/hugo-theme-stack/i18n/en.yaml="EC67112C"
 E:/Documents/MLprojects/HugoBlog/themes/hugo-theme-stack/layouts/_default/_markup/render-link.html="C472FA3E"
+E:/Documents/MLprojects/HugoBlog/themes/hugo-theme-stack/layouts/_default/baseof.html="6A7D219F"
 E:/Documents/MLprojects/HugoBlog/themes/hugo-theme-stack/layouts/_default/single.html="F443319C"
 E:/Documents/MLprojects/HugoBlog/themes/hugo-theme-stack/layouts/index.html="7E7DB209"
 E:/Documents/MLprojects/HugoBlog/themes/hugo-theme-stack/layouts/partials/article/components/content.html="E7DC2CDA"
@@ -39,4 +40,5 @@ E:/Documents/MLprojects/HugoBlog/themes/hugo-theme-stack/layouts/partials/helper
 E:/Documents/MLprojects/HugoBlog/themes/hugo-theme-stack/layouts/partials/helper/image.html="CC22A3AF"
 E:/Documents/MLprojects/HugoBlog/themes/hugo-theme-stack/layouts/partials/pagination.html="FFE81DF9"
 E:/Documents/MLprojects/HugoBlog/themes/hugo-theme-stack/layouts/partials/sidebar/left.html="303ABFCE"
+E:/Documents/MLprojects/HugoBlog/themes/hugo-theme-stack/layouts/post/single.html="A6CF24B4"
 E:/Documents/MLprojects/gpu_scraping/data_cleaning_script.R="0C97CF9B"

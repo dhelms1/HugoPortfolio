@@ -58,11 +58,8 @@ get_gpu_ratings <- function(gpu_link) {
                                     html_text() %>% .[1])
 }
 ```
-Now this... This was true pain to get working. If only Newegg had a normal rating system like every other website out there. But of course they have to put their ratings as "eggs", which is creative I will say, but also made pulling this information ridiculously long. I don't expect the above code to make much sense (it doesn't really to me and I'm the one who wrote it), but basically I had to read through the raw data without converting it to readable text using *html_text()*. I couldn't just index it either because each rating appeared at a different point for each gpu. However, the work around this was to split the raw data at the *rating rating* tag and take the second object, which I then subset ranging from index 10 to 30 to produce this:
-
-> ="5 out of 5 eggs"></
-
-This above is an example of rating for a "5 star" product, which I will now need to clean but that will occur later during the Data Processing section (I probably could have decreased the index range, but I wanted to keep a buffer just in case). Getting the Number of Ratings was much easier, just converting to readable text and taking the first item. I'm just glad this part is over, and now we can move onto the Pricing script code.
+Now this... This was true pain to get working. If only Newegg had a normal rating system like every other website out there. But of course they have to put their ratings as "eggs", which is creative I will say, but also made pulling this information ridiculously long. I don't expect the above code to make much sense (it doesn't really to me and I'm the one who wrote it), but basically I had to read through the raw data without converting it to readable text using *html_text()*. I couldn't just index it either because each rating appeared at a different point for each gpu. However, the work around this was to split the raw data at the *rating rating* tag and take the second object, which I then subset ranging from index 10 to 30 to produce this: `="5 out of 5 eggs"></`. 
+This is an example of rating for a "5 star" product, which I will now need to clean but that will occur later during the Data Processing section (I probably could have decreased the index range, but I wanted to keep a buffer just in case). Getting the Number of Ratings was much easier, just converting to readable text and taking the first item. I'm just glad this part is over, and now we can move onto the Pricing script code.
 
 ## GPU Pricing
 ``` r
@@ -74,33 +71,17 @@ get_gpu_pricing <- function(page_link) {
   tmp_df
 }
 ```
-We go from the hardest to now the easiest piece of code in this entire project. I wish everything was this straight forward, just a simple css selector and converting to it text and we have all the variables we need. I pulled the current price, the savings tag (saying how much % off an item was), and the shipping cost (either "Free" or Numeric value). 
-
-Originally I had tried to also get the original price before it was put on sale and create a new column, where I'd fill it with the current price if not on sale and the sale price if on sale but this gave me a lot of issues. The original prices was a different size vector each time and trying to input them was taking more time than I'd like to admit, so I skipped this and just stuck with the current price.
-
-So now that all the functions have been explained, we can see how the data set was put together in one large data frame.
+We go from the hardest to now the easiest piece of code in this entire project. I wish everything was this straight forward, just a simple css selector and converting to it text and we have all the variables we need. I pulled the current price, the savings tag (saying how much % off an item was), and the shipping cost (either "Free" or Numeric value). Originally I had tried to also get the original price before it was put on sale and create a new column, where I'd fill it with the current price if not on sale and the sale price if on sale but this gave me a lot of issues. The original prices was a different size vector each time and trying to input them was taking more time than I'd like to admit, so I skipped this and just stuck with the current price.
 
 ## Data Collection
 So as I had previously stated earlier, the data was gathered over a number of days since I only wanted to send a few requests per day. Around 2 pages were scraped per day for a total of 356 observations over the collection period. To save some room I won't include all the code used to gather and combine the data into a single data set, but the general idea was that I created an empty data frame for each script above. I then bind the returned values by rows into a data frame, which then contained 36 observations and the corresponding number of features from above. Below is the code used to do this:
-
-```r
-page_num <- 10
-link <- paste0("https://www.newegg.com/Desktop-Graphics-Cards/SubCategory/ID-48/Page-", page_num, "?Tid=7709")
-gpu_links <- read_html(link) %>% html_nodes("a.item-title") %>% html_attr("href")
-
-pricing_df <- rbind(get_gpu_pricing(link), pricing_df)
-gpu_df <- rbind(t(sapply(gpu_links, FUN = get_model_info, USE.NAMES = FALSE)), gpu_df)
-rating_df <- rbind(t(sapply(gpu_links, FUN = get_gpu_ratings, USE.NAMES = FALSE)), rating_df)
-page_df <- data.frame(Page=rep(page_num, length(gpu_links)))
-link_df <- data.frame(URL=gpu_links)                  
-```
 
 I would then read in the previously saved raw data, create a new data frame that matched the current layout of the raw data, and then would row bind the two data frames together into a new raw data set. This would be saved, and the process would be repeated for each page (since they were spaced out). At the end of the process, I ended with 356 total observations with 18 features. However, this data was not at all ready to be used for Exploration or Modeling, and that brings us to the cleaning script.
 
 # Data Cleaning :heart: RegExp
 Okay so maybe not, but there was a good amount of regular expression's used to clean the data. I guess it could be seen as a good thing, but everything read in from the scraping script was put into the data frame as a character. Lot's of which held the numeric values somewhere in a string, such as:
 
-> "1241 MHz (OC Mode)1190 MHz (Gaming Mode)1127 MHz (Silent Mode)"
+`"1241 MHz (OC Mode)1190 MHz (Gaming Mode)1127 MHz (Silent Mode)"`
 
 All I wanted was the core clock speed, but this is what I got instead. And yes I thought maybe split it and index, but of course Newegg likes to change the order in which they list the modes so I couldn't do that. But that's besides the current point. I had all the data ready and it's time to get it in the correct format and create any new features that would be necessary. My goal is to maintain around 300 observations (hence why I scraped a little extra) after cleaning up the data. Just for ease of reading and my own sanity, I'll split up the cleaning based on the scripts above.
 
