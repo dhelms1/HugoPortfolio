@@ -17,14 +17,13 @@ description: In this project, I use R and its library Rvest to scrape Newegg for
 # So Close... Yet So Far 
 If you're reading this, then most likely you too have some type of interest in machine learning or data science. And you know that GPUs are amazing for speeding up the processes you do in this fields, especially for Deep Learning. However if you're currently in the market for one of these GPUs, especially the new NVIDIA RTX Series which would be PERFECT for Deep Learning projects, you know how impossible it is to find one of them (special thanks to all the crypto miners and resellers out there). So I figured if I can't have one, might as well scrape Newegg for information on a bunch of different graphics cards and do some Data Analysis right? Not my first though, but it did sound like an interesting project. And although I initially wanted to implement it in Python, I figured this would be a great learning opportunity for R especially given my current internship. And so here we are, scraping Newegg for information on GPUs while I patiently wait for them to become available.
 
-## Is this Ethical?
 In my many hours of searching the internet about the rules of web scraping and if certain website allow it or not, I find myself asking "Am I really suppose to be doing this?". Some people say no, some say it's fine, others just avoid the question and continue their work. I still don't have the answer to this question, but in my attempt to collect the data as ethically as possible I've taken the following steps:
 
 - Only creating requests ~2 times per day, spaced out by a few hours.
 - Keeping the data private on my computer and not uploading for public use.
 - No private information is being collected, only product details.
 
-Each page on Newegg has around 36 results, and even though it has hundreds of pages I only scraped 10 of them over the span of 5 days. I didn't want to create too many requests and overload their site, so I tried to minimize the amount of time I spent sending requests. Hopefully this is ethical, and if not then this entire post was just hypothetical.
+Each page on Newegg has around 36 results, and even though it has hundreds of pages I only scraped 10 of them over the span of 5 days. I didn't want to create too many requests and overload their site, so I tried to minimize the amount of time I spent sending requests. Hopefully this is ethical, and if not then this all was just hypothetical.
 
 # The Scraping Script
 So basically there are three main categories for which data was scraped: Model Specs (Brand, Series, Memory, etc.), Ratings (Average & Total Number), and Pricing Information (Price, Sale, & Shipping). I'll break down each of these, and the exact code used to collect the data.
@@ -86,15 +85,7 @@ Okay so maybe not, but there was a good amount of regular expression's used to c
 All I wanted was the core clock speed, but this is what I got instead. And yes I thought maybe split it and index, but of course Newegg likes to change the order in which they list the modes so I couldn't do that. But that's besides the current point. I had all the data ready and it's time to get it in the correct format and create any new features that would be necessary. My goal is to maintain around 300 observations (hence why I scraped a little extra) after cleaning up the data. Just for ease of reading and my own sanity, I'll split up the cleaning based on the scripts above.
 
 ## GPU Spec Cleaning
-Luckily, a few features of this data could be left as characters and didn't need much cleaning (*Brand*, *Model*, *GPU Series*, *GPU*, *Memory Interface*, & *Memory Type*).
-
-#### Chipset Manufacturer
-``` r
-raw.data <- raw.data %>%  filter(Chipset.Manufacturer == "AMD" | Chipset.Manufacturer == "ATI" | 
-                                 Chipset.Manufacturer == "NVIDIA" | is.na(Chipset.Manufacturer))
-```
-Not much cleaning had to be done here, there was only observation that had gotten messed up during scraping that didn't have the correct Chipset Manufacturer. After doing this, we dropped from 356 to 355 observations. 
-
+Luckily, a few features of this data could be left as characters and didn't need much cleaning (*Brand*, *Model*, *GPU Series*, *GPU*, *Memory Interface*, & *Memory Type*). Other features like *Chipset Manufacturer* and *Memory Size* only had slight cleaning done to them (Chipset had a single value filtered out and Memory Size was filtered to only keep memory measured in GB, which was all but 4).
 
 #### Clock Speeds
 ``` r
@@ -114,15 +105,6 @@ So now as I had pointed out earlier, the clock speeds (both core and boost) had 
 
 - **Base**: taking the minimum gave the the lowest measurement within each row, so I just assumed this as the "base" value.
 - **OC**: the overclock value was a little more tricky. I couldn't just take the max because then GPUs that couldn't be overclocked had their base value in the OC feature. The solution to this was to ensure there was more than one value in the feature, and if true then we took the max (otherwise we filled in with NA).
-
-
-#### Memory Size
-``` r
-raw.data <- raw.data %>% filter(grepl('GB', Memory.Size) | is.na(Memory.Size)) %>% 
-  mutate(Memory.Size=as.numeric(gsub('GB','', Memory.Size)))
-```
-Again, not much here in terms of cleaning. There were a few GPUs measured in MB, so these observations were dropped. I then removed the GB from the string and converted all the values to numeric. After doing this, we dropped from 355 to 351 observations. 
-
 
 #### Month/Year
 ``` r
