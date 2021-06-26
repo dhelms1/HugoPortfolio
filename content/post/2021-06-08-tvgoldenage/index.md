@@ -3,7 +3,7 @@ title: "#tidytuesday: TV\'s Golden Age"
 author: Derek Helms
 date: '2021-06-08'
 slug: tvgoldenage
-image: img/banner.jpeg
+image: img/banner.jpg
 categories: 
   - R
 tags:

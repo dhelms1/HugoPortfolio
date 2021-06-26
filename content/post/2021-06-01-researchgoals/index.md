@@ -3,7 +3,7 @@ title: 2021 Summer Undergraduate Research Goals
 author: Derek Helms
 date: '2021-06-01'
 slug: researchgoals
-image: img/banner.png
+image: img/banner.jpg
 tags:
   - Personal
 description: A brief overview of what I hope to accomplish during my 10 week research internship with the CHC (Center for Healthy Communities). This includes Personal, Academic, and Research Development skills that I aim to learn throughout this experience and how to carry them forward into higher education.

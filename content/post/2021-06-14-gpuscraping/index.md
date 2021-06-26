@@ -2,7 +2,7 @@
 title: Web Scraping GPU Information with Rvest [In Progress]
 date: '2021-06-16'
 slug: gpuscraping
-image: img/gpu_banner.jpg
+image: img/banner.png
 categories:
   - R
   - Projects
