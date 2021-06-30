@@ -1,5 +1,5 @@
 ---
-title: Web Scraping GPU Information with Rvest [In Progress]
+title: Web Scraping GPU Information with Rvest
 date: '2021-06-16'
 slug: gpuscraping
 image: img/banner.png
@@ -167,8 +167,64 @@ The final step. Although I don't have a solid reason as to why I chose to keep a
 So a bit under my initial goal, but close enough. We now have 288 observations with 21 features that are ready to be explored.
 
 # Data Exploration
-*To be filled...*
+Okay so I know I said that I wasn't going to upload the data for privacy reasons, but I figured showing a few observations would be fine (just to get a feel for the general layout of the data).
+
+![](img/Head.png)
+
+This is the final cleaned data, and it's ready to explore. I'll go over a few of the main features in the data set and some aggregated graphs/tables. The main purpose of this project was web scraping and data cleaning, but it's also important to actually use the data in exploration.
+
+## Brands 
+
+![](img/Brand.png) ![](img/BrandYearPrice.png) 
+
+As we can see, mainly 4 brands are responsible for the majority of the GPUs within our data. MSI, ASUS, GIGABYTE, and EVGA have a clear lead on the number of GPUs present on NewEgg. If we were to look at the average price over the past few years for each of these brands, there is no clear pattern but it does seem that in 2021 and 2021 the average prices seem to be stabilizing and within approximately \$100 of each other. One more aspect I wanted to look at is the average review for each brand:
+
+| Brand    | Rating |
+| -------- | ------ |
+| EVGA     | 4.52   |
+| ASUS     | 4.35   |
+| MSI      | 4.32   |
+| GIGABYTE | 4.20   |
+
+Although there is now huge difference in rating either, EVGA does seem to be the leader by a bit. ASUS and MSI and nearly tied, and GIGABYTE trails behind them by a small amount. 
 
 
+## GPUs
+
+![](img/GPUs.png) ![](img/GPUSeries.png) 
+
+If we look at the most common GPUs in our data set we can see the majority of them are GeForce, with only the Radeon RX 6700 XT being in the top 11. However this does not carry over to the most common GPU Series, which seems to be split 6 to 5 for NVIDIA and AMD (respectively). The GTX 10 Series is the most common, which makes since given how long they have been on the market. I also wanted to look into the highest rated GPUs:
+
+![](img/GPURatings.png) 
+
+The top 15 rated GPUs (for the most part) all fall under the GeForce Series, except the Radeon HD 5870. Which is an interesting find because it only has 1 GB of memory size, cost \$325, and does not have good performance (from what I saw on YouTube it was averaging below 30 FPS on many modern games). Yet there are 239 reviews with an average of 5 stars... Maybe there's something I'm missing here but that blows my mind. Besides that, many of these remaining GPUs are still popular to this day being in the GTX 10, 16, and 20 Series. I also filtered these results to have at least 30 ratings since GPUs, with let's say 3 total ratings of 5 stars, aren't as reliable to be "top rated". 
+
+![](img/SeriesSpecs.png)
+
+I also pulled an average overview of the specs for the 6 most common GPU series in the data. Although the NVIDIA cards seem to be more expensive than AMD, they also have a higher average rating. If memory size was essential, the AMD RX 6000 Series average 16 GB for only \$360 which seems like a really good deal (but AMD also isn't compatible with CUDA so keep that in mind).
+
+
+## Clock Speed
+
+![](img/CoreClock.png) ![](img/OCCoreClock.png)
+
+![](img/BoostClock.png) ![](img/OCBoostClock.png) 
+
+There really isn't too much to say about this information. The core clock speed is less than the boost clock speed on average (expected), and the overclocked core clock speed is less than the overclocked boost clock speed on average (expected). I did however have to look into the boost clock value of 5000 MHz, which belongs to the AMD FirePro V7900 and was not an error (which I thought it was). It goes from a core clock of 1250 MHz to a boost clock of 5000 MHz, which is also interesting given it only has 2GB of memory size.
+
+## Price
+
+![](img/Price.png)
+
+For the most part, the majority of GPUs in the data are below \$1000 and seem to cost an average of roughly \$500. However, we have a single observation for a GPU that costs over \$3000. This had me wondering, what on Earth could cost that much money? Which brought me to examine the 15 most expensive GPUs in the data:
+
+![](img/ExpGPU.png) 
+
+I also explored the most expensive GPUs, which is completely dominated by the TITAN V. 12 GB of memory size, 1460 MHz boost clock speed, and uses NVIDIA chipset... A bit pricey but understandable. Besides that outlier, the most expensive GPUs in our data set (on average) seem to fall into th \$620 to \$870 range and again, the majority of them are GeForce cards. 
+
+
+# Conclusion
+
+Overall this project had taught me a ton. Learning to understand html code a bit more has been super helpful in also changing some things in my website. Learning how exactly to scrape data off a website was also a lot of fun, trying this out with a deep learning project in Python where I pull reviews and try sentiment analysis on it might be an interesting idea to explore. Cleaning the data... between this and my work right now I'm not sure how much more data cleaning I'd want to do for a while, but it's nice to see the end product so that makes it worth it. Exploring these GPUs has been a very interesting project, I didn't realize how many different types of GPUs there are and all the different specs (memory type, clock speed, memory interface, etc.). I'll definitely want to come back to this data eventually and see if some type of model can be built from it, but that will have to be for a later date.
 
 
