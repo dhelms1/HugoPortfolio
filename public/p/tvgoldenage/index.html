@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='In this mini-project, I explore my first data set for the TidyTuesday Project. The purpose of these are for experience with EDA using R for my Undergrad Research Program. This weeks data covers TV dramas from 1990 to 2018, and will help us answer the question: &#34;Is the Golden Age of TV real?&#34;.'><title>#tidytuesday: TV&#39;s Golden Age</title>
+
+<link rel='canonical' href='/p/tvgoldenage/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='#tidytuesday: TV&#39;s Golden Age'>
+<meta property='og:description' content='In this mini-project, I explore my first data set for the TidyTuesday Project. The purpose of these are for experience with EDA using R for my Undergrad Research Program. This weeks data covers TV dramas from 1990 to 2018, and will help us answer the question: &#34;Is the Golden Age of TV real?&#34;.'>
+<meta property='og:url' content='/p/tvgoldenage/'>
+<meta property='og:site_name' content='Derek Helms'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='TidyTuesday' /><meta property='article:tag' content='R' /><meta property='article:published_time' content='2021-06-08T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-06-08T00:00:00&#43;00:00'/><meta property='og:image' content='/p/tvgoldenage/img/banner.jpg' />
+<meta name="twitter:title" content="#tidytuesday: TV&#39;s Golden Age">
+<meta name="twitter:description" content="In this mini-project, I explore my first data set for the TidyTuesday Project. The purpose of these are for experience with EDA using R for my Undergrad Research Program. This weeks data covers TV dramas from 1990 to 2018, and will help us answer the question: &#34;Is the Golden Age of TV real?&#34;."><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='/p/tvgoldenage/img/banner.jpg' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+    </head>
+    <body class="">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "light");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.body.dataset.scheme = 'dark';
+        } else {
+            document.body.dataset.scheme = 'light';
+        }
+    })();
+</script><div class="container main-container flex on-phone--column extended article-page with-toolbar">
+            <aside class="sidebar left-sidebar sticky">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header class="site-info">
+        
+        <h2 class="site-description"></h2>
+    </header>
+
+    <ol class="menu" id="main-menu">
+        
+        
+        
+
+        <li >
+            <a href='/'>
+                
+                    <svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px"><path d="M 12 2.0996094 L 1 12 L 4 12 L 4 21 L 11 21 L 11 15 L 13 15 L 13 21 L 20 21 L 20 12 L 23 12 L 12 2.0996094 z M 12 4.7910156 L 18 10.191406 L 18 11 L 18 19 L 15 19 L 15 13 L 9 13 L 9 19 L 6 19 L 6 10.191406 L 12 4.7910156 z"/></svg>
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='/about-myself/'>
+                
+                    <svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px"><path d="M 10 0 C 6.24 -0.02 2.97 3.1 3 7 L 3 8 L 3 11.748047 C 2.4701855 12.225307 2.0097656 13.000361 2.0097656 14.011719 C 2.0097656 15.27649 2.7280504 16.191398 3.4042969 16.585938 C 3.7657984 16.796847 3.8681582 16.757564 4.125 16.810547 C 5.6269646 19.927424 8.5402409 22.551214 11.867188 22.994141 L 12 23.011719 L 12.132812 22.994141 C 15.459499 22.550139 18.373013 19.926518 19.875 16.810547 C 20.131842 16.757567 20.234202 16.796847 20.595703 16.585938 C 21.27195 16.191398 21.990234 15.27649 21.990234 14.011719 C 21.990234 12.746948 21.27195 11.830087 20.595703 11.435547 C 20.297075 11.261319 20.232618 11.304211 20 11.248047 L 20 6 C 20 3.791 18.209 2 16 2 L 15 2 L 15 2.0097656 C 15 2.0097656 13.98 0 10 0 z M 12.445312 8 L 13 8 L 15 8 C 16.630274 8 17.949827 9.3018298 17.992188 10.921875 L 17.992188 13.013672 L 19.142578 13.013672 C 19.148378 13.014264 19.368026 13.035792 19.587891 13.164062 C 19.810644 13.294023 19.990234 13.37849 19.990234 14.011719 C 19.990234 14.644948 19.810644 14.727462 19.587891 14.857422 C 19.365137 14.987382 19.136719 15.009766 19.136719 15.009766 L 18.519531 15.044922 L 18.275391 15.611328 C 17.128688 18.256067 14.48056 20.569091 12 20.96875 C 9.5197032 20.569931 6.8713505 18.257043 5.7246094 15.611328 L 5.4804688 15.044922 L 4.8632812 15.009766 C 4.8632812 15.009766 4.6348629 14.987386 4.4121094 14.857422 C 4.1893558 14.727462 4.0097656 14.644948 4.0097656 14.011719 C 4.0097656 13.37849 4.1893558 13.294023 4.4121094 13.164062 C 4.6319738 13.035789 4.8516269 13.014264 4.8574219 13.013672 L 6.0078125 13.013672 L 6.0078125 10 L 9 10 C 10.477 10 11.752312 9.191 12.445312 8 z"/></svg>
+                
+                <span>About Myself</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='https://www.linkedin.com/in/derek-helms'>
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                
+                <span>LinkedIn</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='https://github.com/dhelms1'>
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                
+                <span>GitHub</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='/archives/'>
+                
+                    <?xml version="1.0"?><svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px">    <path d="M13.172,2H6C4.9,2,4,2.9,4,4v16c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2V8.828c0-0.53-0.211-1.039-0.586-1.414l-4.828-4.828 C14.211,2.211,13.702,2,13.172,2z M18.5,9H13V3.5L18.5,9z"/></svg>
+                
+                <span>Archive</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='/search/'>
+                
+                    <?xml version="1.0"?><svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px">    <path d="M 9 2 C 5.1458514 2 2 5.1458514 2 9 C 2 12.854149 5.1458514 16 9 16 C 10.747998 16 12.345009 15.348024 13.574219 14.28125 L 14 14.707031 L 14 16 L 20 22 L 22 20 L 16 14 L 14.707031 14 L 14.28125 13.574219 C 15.348024 12.345009 16 10.747998 16 9 C 16 5.1458514 12.854149 2 9 2 z M 9 4 C 11.773268 4 14 6.2267316 14 9 C 14 11.773268 11.773268 14 9 14 C 6.2267316 14 4 11.773268 4 9 C 4 6.2267316 6.2267316 4 9 4 z"/></svg>
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+
+        
+            <li id="dark-mode-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                <span>Dark Mode</span>
+            </li>
+        
+    </ol>
+</aside>
+
+            <main class="main full-width">
+    <div id="article-toolbar">
+        <a href="/" class="back-home">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+            <span>Back</span>
+        </a>
+    </div>
+
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/tvgoldenage/">
+                <img src="/p/tvgoldenage/img/banner_hudecf68f3e37c839d885e2939bd226e89_152575_800x0_resize_q75_box.jpg"
+                        srcset="/p/tvgoldenage/img/banner_hudecf68f3e37c839d885e2939bd226e89_152575_800x0_resize_q75_box.jpg 800w, /p/tvgoldenage/img/banner_hudecf68f3e37c839d885e2939bd226e89_152575_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="450" 
+                        loading="lazy"
+                        alt="Featured image of post #tidytuesday: TV&#39;s Golden Age" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/r/" >
+                R
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/tvgoldenage/">#tidytuesday: TV&#39;s Golden Age</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        In this mini-project, I explore my first data set for the TidyTuesday Project. The purpose of these are for experience with EDA using R for my Undergrad Research Program. This weeks data covers TV dramas from 1990 to 2018, and will help us answer the question: &#34;Is the Golden Age of TV real?&#34;.
+    </h3>
+    <footer class="article-time">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <time class="article-time--published">Jun 08, 2021</time>
+    </footer></div>
+</header>
+
+    <section class="article-content">
+    <blockquote>
+<p><a class="link" href="https://github.com/dhelms1/tidy-tuesday/tree/main/TvGoldenAge"  target="_blank" rel="noopener"
+    ><strong>Original GitHub Repository</strong></a></p>
+</blockquote>
+<h1 id="introduction">Introduction</h1>
+<p>Welcome! This is the first of many posts for the <strong>#tidytuesday</strong> data exploration project in which I explore a smaller data set with no goal of creating a model but strictly to become more familiar with R and packages such as <em>dplyr, tidyverse,</em> &amp; <em>ggplot</em>. In this week, we&rsquo;ll explore the IMDb data set that recorded information such as seasons, date, average rating, and shares for TV dramas from 1990 to 2018. The data originated from the <a class="link" href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-01-08"  target="_blank" rel="noopener"
+    >Tidy Tuesday GitHub</a> repository.</p>
+<h1 id="initial-exploration">Initial Exploration</h1>
+<p>Reading in the data and displaying the first few rows, we can see:</p>
+<p><figure style="flex-grow: 484; flex-basis: 1163px">
+		<a href="/p/tvgoldenage/img/head.jpg" data-size="790x163"><img src="/p/tvgoldenage/img/head.jpg"
+				
+				width="790"
+				height="163"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="n">tv.data</span> <span class="o">&lt;-</span> <span class="n">tv.data</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="o">-</span><span class="n">titleId</span><span class="p">)</span> <span class="c1"># Drop &#39;titleId&#39; Column</span>
+
+<span class="nf">length</span><span class="p">(</span><span class="nf">unique</span><span class="p">(</span><span class="n">tv.data</span><span class="o">$</span><span class="n">title</span><span class="p">))</span> <span class="c1"># 868 unique shows</span>
+</code></pre></div><p><figure style="flex-grow: 422; flex-basis: 1013px">
+		<a href="/p/tvgoldenage/img/summary.jpg" data-size="790x187"><img src="/p/tvgoldenage/img/summary.jpg"
+				
+				width="790"
+				height="187"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>Initially I decided to drop the <em>titleId</em> column, as I didn’t see much use for it in the data exploration since we already have <em>title</em>. Of the 2266 observations within the data set, there are 868 unique shows. The number of seasons range from 1 to 44 (which we will need to explore this 44 season show to see if it is true). The average rating ranges from 2.704 to 9.682, as well as shares ranging from 0 to 55.65.</p>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="n">av.plot</span> <span class="o">&lt;-</span> <span class="nf">ggplot</span><span class="p">(</span><span class="n">tv.data</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">av_rating</span><span class="p">))</span> <span class="o">+</span> <span class="nf">geom_histogram</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="m">40</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s">&#34;#DA0A0A&#34;</span><span class="p">)</span> <span class="o">+</span> 
+  <span class="nf">xlab</span><span class="p">(</span><span class="s">&#39;Rating&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ylab</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ggtitle</span><span class="p">(</span><span class="s">&#39;Average Rating&#39;</span><span class="p">)</span>
+<span class="n">share.plot</span> <span class="o">&lt;-</span> <span class="nf">ggplot</span><span class="p">(</span><span class="n">tv.data</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">share</span><span class="p">))</span> <span class="o">+</span> <span class="nf">geom_histogram</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="m">40</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s">&#34;#09C517&#34;</span><span class="p">)</span> <span class="o">+</span> 
+  <span class="nf">xlab</span><span class="p">(</span><span class="s">&#39;Share&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ylab</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ggtitle</span><span class="p">(</span><span class="s">&#39;Share&#39;</span><span class="p">)</span>
+<span class="n">season.plot</span> <span class="o">&lt;-</span> <span class="nf">ggplot</span><span class="p">(</span><span class="n">tv.data</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">seasonNumber</span><span class="p">))</span> <span class="o">+</span> <span class="nf">geom_histogram</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="m">40</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s">&#34;#0A75DA&#34;</span><span class="p">)</span> <span class="o">+</span> 
+  <span class="nf">xlab</span><span class="p">(</span><span class="s">&#39;Seasons&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ylab</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ggtitle</span><span class="p">(</span><span class="s">&#39;Number of Seasons&#39;</span><span class="p">)</span>
+<span class="nf">grid.arrange</span><span class="p">(</span><span class="n">av.plot</span><span class="p">,</span> <span class="n">share.plot</span><span class="p">,</span> <span class="n">season.plot</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="m">3</span><span class="p">)</span>
+</code></pre></div><p><figure style="flex-grow: 225; flex-basis: 540px">
+		<a href="/p/tvgoldenage/img/initial.jpg" data-size="880x391"><img src="/p/tvgoldenage/img/initial.jpg"
+				
+				width="880"
+				height="391"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<h1 id="month-day--year-creationexploration">Month, Day, &amp; Year: Creation/Exploration</h1>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="n">tv.data</span> <span class="o">&lt;-</span> <span class="n">tv.data</span> <span class="o">%&gt;%</span> <span class="nf">mutate</span><span class="p">(</span><span class="n">year</span> <span class="o">=</span> <span class="nf">year</span><span class="p">(</span><span class="n">date</span><span class="p">),</span>
+                              <span class="n">month</span> <span class="o">=</span> <span class="nf">month</span><span class="p">(</span><span class="n">date</span><span class="p">),</span>
+                              <span class="n">day</span> <span class="o">=</span> <span class="nf">day</span><span class="p">(</span><span class="n">date</span><span class="p">))</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">))</span>
+</code></pre></div><p><figure style="flex-grow: 295; flex-basis: 710px">
+		<a href="/p/tvgoldenage/img/ymd.jpg" data-size="790x267"><img src="/p/tvgoldenage/img/ymd.jpg"
+				
+				width="790"
+				height="267"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>I decided to split the date feature into 3 subset features: <em>year</em>, <em>month</em>, and <em>day</em> using the <a class="link" href="https://lubridate.tidyverse.org/"  target="_blank" rel="noopener"
+    >lubridate</a> package. This will make exploration easier for me later on where I can group by year or month rather than date strings. I also reordered the columns to put these after the date feature instead of the end of the data frame cause my OCD didn’t like how it looked…</p>
+<h3 id="year">Year</h3>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="nf">ggplot</span><span class="p">(</span><span class="n">tv.data</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="nf">factor</span><span class="p">(</span><span class="n">year</span><span class="p">)))</span> <span class="o">+</span> <span class="nf">geom_bar</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span> <span class="s">&#34;#FF6666&#34;</span><span class="p">)</span> <span class="o">+</span> 
+  <span class="nf">ylab</span><span class="p">(</span><span class="s">&#39;Year Occurance&#39;</span><span class="p">)</span> <span class="o">+</span>  <span class="nf">xlab</span><span class="p">(</span><span class="s">&#39;Year&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ggtitle</span><span class="p">(</span><span class="s">&#39;Year Occurance Distribution&#39;</span><span class="p">)</span> <span class="o">+</span> 
+  <span class="nf">theme</span><span class="p">(</span><span class="n">axis.text.x</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">angle</span> <span class="o">=</span> <span class="m">90</span><span class="p">,</span> <span class="n">vjust</span> <span class="o">=</span> <span class="m">0.5</span><span class="p">))</span> <span class="o">+</span> 
+  <span class="nf">geom_text</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">..count..</span> <span class="o">+</span> <span class="m">8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">..count..</span><span class="p">),</span> <span class="n">stat</span><span class="o">=</span><span class="s">&#39;count&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="m">3</span><span class="p">)</span>
+</code></pre></div><p><figure style="flex-grow: 141; flex-basis: 340px">
+		<a href="/p/tvgoldenage/img/year.jpg" data-size="685x483"><img src="/p/tvgoldenage/img/year.jpg"
+				
+				width="685"
+				height="483"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>It seems that the occurrence for years is extremely right skewed, almost growing exponentially (the last date is 2018-10-10, so we are missing around 2.5 months of data for 2018). We&rsquo;ll now want to explroe the average rating for each year to see if it increases/decreases as more shows seem to be coming out (maybe more isn’t always better).</p>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="n">tv.data</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">av_rating</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">group_by</span><span class="p">(</span><span class="n">year</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">summarize</span><span class="p">(</span><span class="n">average_rating</span> <span class="o">=</span> <span class="nf">mean</span><span class="p">(</span><span class="n">av_rating</span><span class="p">))</span> <span class="o">%&gt;%</span> 
+  <span class="p">{</span><span class="nf">ggplot</span><span class="p">(</span><span class="n">.,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="nf">factor</span><span class="p">(</span><span class="n">year</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">average_rating</span><span class="p">))</span> <span class="o">+</span> <span class="nf">geom_point</span><span class="p">(</span><span class="n">color</span><span class="o">=</span> <span class="s">&#34;#FF9333&#34;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="m">3</span><span class="p">)</span> <span class="o">+</span> 
+      <span class="nf">geom_hline</span><span class="p">(</span><span class="n">yintercept</span><span class="o">=</span><span class="m">8</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;red&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="m">0.5</span><span class="p">)</span> <span class="o">+</span> <span class="nf">geom_vline</span><span class="p">(</span><span class="n">xintercept</span><span class="o">=</span><span class="m">12</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;blue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="m">0.5</span><span class="p">)</span> <span class="o">+</span>  
+      <span class="nf">xlab</span><span class="p">(</span><span class="s">&#39;Year&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ylab</span><span class="p">(</span><span class="s">&#39;Average Rating&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ggtitle</span><span class="p">(</span><span class="s">&#39;Average Yearly Rating&#39;</span><span class="p">)</span> <span class="o">+</span> 
+      <span class="nf">theme</span><span class="p">(</span><span class="n">axis.text.x</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">angle</span> <span class="o">=</span> <span class="m">90</span><span class="p">,</span> <span class="n">vjust</span> <span class="o">=</span> <span class="m">0.5</span><span class="p">))</span> <span class="o">+</span>
+      <span class="nf">geom_text</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="nf">sprintf</span><span class="p">(</span><span class="s">&#34;%.2f&#34;</span><span class="p">,</span> <span class="n">average_rating</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">average_rating</span> <span class="o">+</span> <span class="m">0.03</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="m">2.8</span><span class="p">,</span> <span class="n">vjust</span><span class="o">=</span><span class="m">0.3</span><span class="p">)}</span>
+</code></pre></div><p><figure style="flex-grow: 142; flex-basis: 343px">
+		<a href="/p/tvgoldenage/img/av_yearly.jpg" data-size="689x482"><img src="/p/tvgoldenage/img/av_yearly.jpg"
+				
+				width="689"
+				height="482"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>Looking at the average rating for each year, it seems the values range from 7.60 (in 2000) to 8.20 (in 2004). For the most part, there are no standout years in which extremely high/low ratings were present. For the most part, it seems that shows prior to 2001 had lower average ratings (all below 8) and almost all shows after 2001 had above an average rating of 8 (excluding 2007 which had a 7.93). If we think of the above graph as being split into the usual graph quadrants (I, II, III, IV), we can see that the majority of the data after 2001 is in quadrant I and all data prior to 2001 is in quadrant III.</p>
+<h3 id="month">Month</h3>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="nf">ggplot</span><span class="p">(</span><span class="n">tv.data</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="nf">factor</span><span class="p">(</span><span class="n">month</span><span class="p">)))</span> <span class="o">+</span> <span class="nf">geom_bar</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span> <span class="s">&#34;#3396FF&#34;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ylab</span><span class="p">(</span><span class="s">&#39;Month Occurance&#39;</span><span class="p">)</span> <span class="o">+</span> 
+  <span class="nf">xlab</span><span class="p">(</span><span class="s">&#39;Month&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ggtitle</span><span class="p">(</span><span class="s">&#39;Monthly Occurance Distribution&#39;</span><span class="p">)</span> <span class="o">+</span>
+  <span class="nf">geom_text</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">..count..</span> <span class="o">+</span> <span class="m">20</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">..count..</span><span class="p">),</span> <span class="n">stat</span><span class="o">=</span><span class="s">&#39;count&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="m">4</span><span class="p">)</span>
+</code></pre></div><p><figure style="flex-grow: 142; flex-basis: 342px">
+		<a href="/p/tvgoldenage/img/month.jpg" data-size="692x485"><img src="/p/tvgoldenage/img/month.jpg"
+				
+				width="692"
+				height="485"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>Although this doesn’t tell us too much about the data, is seems that the majority of shows in our data set premiere in January, with most months holding somewhat steady in the 130-210 range (except for July).</p>
+<h1 id="one-hot-encoding-for-genres">One-Hot-Encoding for Genres</h1>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="n">genres.types</span> <span class="o">&lt;-</span> <span class="nf">unique</span><span class="p">(</span><span class="nf">unlist</span><span class="p">(</span><span class="nf">strsplit</span><span class="p">(</span><span class="nf">unlist</span><span class="p">(</span><span class="nf">unique</span><span class="p">(</span><span class="n">tv.data</span><span class="o">$</span><span class="n">genres</span><span class="p">)),</span> <span class="s">&#39;,&#39;</span><span class="p">)))</span>
+<span class="n">tv.data[genres.types]</span> <span class="o">&lt;-</span> <span class="nf">rep</span><span class="p">(</span><span class="kc">NA</span><span class="p">,</span> <span class="nf">nrow</span><span class="p">(</span><span class="n">tv.data</span><span class="p">))</span>
+
+<span class="nf">for </span><span class="p">(</span><span class="n">idx</span> <span class="n">in</span> <span class="m">1</span><span class="o">:</span><span class="nf">nrow</span><span class="p">(</span><span class="n">tv.data</span><span class="p">))</span> <span class="p">{</span>
+  <span class="n">tv.data[idx</span><span class="p">,</span> <span class="n">genres.types]</span> <span class="o">&lt;-</span> <span class="nf">as.numeric</span><span class="p">(</span><span class="n">genres.types</span> <span class="o">%in%</span> 
+                                           <span class="nf">unlist</span><span class="p">(</span><span class="nf">strsplit</span><span class="p">(</span><span class="n">tv.data</span><span class="o">$</span><span class="n">genres[idx]</span><span class="p">,</span> <span class="s">&#39;,&#39;</span><span class="p">)))</span>
+<span class="p">}</span>
+
+<span class="nf">kable</span><span class="p">(</span><span class="nf">t</span><span class="p">(</span><span class="n">tv.data[1</span><span class="p">,</span><span class="n">]</span><span class="p">),</span> <span class="n">col</span><span class="o">=</span><span class="s">&#39;Observation #1&#39;</span><span class="p">)</span>
+</code></pre></div><p><figure style="flex-grow: 98; flex-basis: 236px">
+		<a href="/p/tvgoldenage/img/one_hot.jpg" data-size="829x843"><img src="/p/tvgoldenage/img/one_hot.jpg"
+				
+				width="829"
+				height="843"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>The original genres feature was a single string that listed all genres only separated by a comma. There probably is a fast way out there (or a package that could handle this for me) but my method still only took a few seconds to run so I’m not too worried about optimizing it. I initially got all unique genres strings from the data frame, which I then split on the commas, and finally only kept the unique values from this split (which was 22 total genres). I then created empty columns, looped over all rows for the given columns, and one hot encoded the features to have a 1 is the genre feature contained any of the given genres and a 0 if it does not. I was having an issue of the values being filled column wise, so looping across rows allowed me to fill by rows rather than columns (again, may not be the best way to do it but it still executed quickly so I’ll go with it).</p>
+<h3 id="most-common-genres">Most Common Genres</h3>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="nf">data.frame</span><span class="p">(</span><span class="n">genres</span><span class="o">=</span><span class="nf">all_of</span><span class="p">(</span><span class="n">genres.types</span><span class="p">),</span>
+           <span class="n">appearences</span><span class="o">=</span><span class="nf">unname</span><span class="p">(</span><span class="n">tv.data</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="nf">all_of</span><span class="p">(</span><span class="n">genres.types</span><span class="p">))</span> <span class="o">%&gt;%</span>
+                                <span class="nf">colSums</span><span class="p">()))</span> <span class="o">%&gt;%</span> <span class="nf">slice_max</span><span class="p">(</span><span class="n">appearences</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="nf">length</span><span class="p">(</span><span class="n">genres.types</span><span class="p">))</span> <span class="o">%&gt;%</span>
+  <span class="p">{</span><span class="nf">ggplot</span><span class="p">(</span><span class="n">.,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="nf">factor</span><span class="p">(</span><span class="n">genres</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span> <span class="n">genres</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">appearences</span><span class="p">))</span> <span class="o">+</span>
+      <span class="nf">geom_col</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s">&#34;#48BF04&#34;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">xlab</span><span class="p">(</span><span class="s">&#39;Genre&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ylab</span><span class="p">(</span><span class="s">&#39;Appearences&#39;</span><span class="p">)</span> <span class="o">+</span>
+      <span class="nf">ggtitle</span><span class="p">(</span><span class="s">&#39;Number of Appearences Per Genre&#39;</span><span class="p">)</span> <span class="o">+</span>
+      <span class="nf">theme</span><span class="p">(</span><span class="n">axis.text.x</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">angle</span> <span class="o">=</span> <span class="m">90</span><span class="p">,</span> <span class="n">vjust</span> <span class="o">=</span> <span class="m">0.5</span><span class="p">))</span> <span class="o">+</span>
+      <span class="nf">geom_text</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="nf">sprintf</span><span class="p">(</span><span class="s">&#34;%.0f&#34;</span><span class="p">,</span> <span class="n">appearences</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">appearences</span> <span class="o">+</span> <span class="m">50</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="m">3</span><span class="p">,</span> <span class="n">vjust</span><span class="o">=</span><span class="m">0.3</span><span class="p">)}</span>
+</code></pre></div><p><figure style="flex-grow: 139; flex-basis: 334px">
+		<a href="/p/tvgoldenage/img/genre_appear.jpg" data-size="673x483"><img src="/p/tvgoldenage/img/genre_appear.jpg"
+				
+				width="673"
+				height="483"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>From the above graph, we can see that “Drama” appears in every TV show genre description (which makes sense since the data set itself covers TV dramas from 1990 to 2018). Following this we can see that “Crime”, “Mystery”, and “Comedy” are the next most common sub-genres (since every show is also a Drama). An idea we may want to explore is whether we can condense these sub-genres down into more broad categories (i.e. combine genres like Action/Adventure or Thriller/Horror) and see how this effects the above graph.</p>
+<h3 id="average-rating-per-genre">Average Rating Per Genre</h3>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="nf">data.frame</span><span class="p">(</span><span class="n">genres</span><span class="o">=</span><span class="nf">all_of</span><span class="p">(</span><span class="n">genres.types</span><span class="p">),</span>
+           <span class="n">avg_ratings</span><span class="o">=</span><span class="p">(</span><span class="n">tv.data</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="nf">all_of</span><span class="p">(</span><span class="n">genres.types</span><span class="p">))</span> <span class="o">%&gt;%</span>
+                          <span class="nf">mutate_each</span><span class="p">(</span><span class="nf">funs</span><span class="p">(</span><span class="n">.*tv.data</span><span class="o">$</span><span class="n">av_rating</span><span class="p">))</span> <span class="o">%&gt;%</span>
+                          <span class="nf">colSums</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">tv.data</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="nf">all_of</span><span class="p">(</span><span class="n">genres.types</span><span class="p">))</span> <span class="o">%&gt;%</span> <span class="nf">colSums</span><span class="p">()))</span> <span class="o">%&gt;%</span>
+  <span class="p">{</span><span class="nf">ggplot</span><span class="p">(</span><span class="n">.,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">genres</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">avg_ratings</span><span class="p">))</span> <span class="o">+</span> <span class="nf">geom_point</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s">&#34;#8F0ADA&#34;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="m">3</span><span class="p">)</span> <span class="o">+</span> 
+      <span class="nf">xlab</span><span class="p">(</span><span class="s">&#39;Genre&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ylab</span><span class="p">(</span><span class="s">&#39;Avg Ratings&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ggtitle</span><span class="p">(</span><span class="s">&#39;Average Ratings Per Genre&#39;</span><span class="p">)</span> <span class="o">+</span>
+      <span class="nf">theme</span><span class="p">(</span><span class="n">axis.text.x</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">angle</span> <span class="o">=</span> <span class="m">90</span><span class="p">,</span> <span class="n">vjust</span> <span class="o">=</span> <span class="m">0.5</span><span class="p">))</span> <span class="o">+</span>
+      <span class="nf">geom_text</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="nf">sprintf</span><span class="p">(</span><span class="s">&#34;%.2f&#34;</span><span class="p">,</span> <span class="n">avg_ratings</span><span class="p">),</span><span class="n">y</span><span class="o">=</span><span class="n">avg_ratings</span> <span class="o">+</span> <span class="m">0.18</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="m">3</span><span class="p">,</span> <span class="n">vjust</span><span class="o">=</span><span class="m">0.3</span><span class="p">)}</span>
+</code></pre></div><p><figure style="flex-grow: 141; flex-basis: 338px">
+		<a href="/p/tvgoldenage/img/av_genre_rate.jpg" data-size="686x486"><img src="/p/tvgoldenage/img/av_genre_rate.jpg"
+				
+				width="686"
+				height="486"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>I’m not gonna say I called this one but just look at “Reality-TV”… If you’ve ever seen an episode of <em>Keeping up with the Kardashians</em> or <em>Real Housewives of any major city in America</em> then you’d agree with that number. But besides that, it seems that most fall into the average range of 7.5 to 8.5 (a more reasonable number). It seems that surprisingly, TV shows relating to “War” are the highest rated, followed by “Sports” and “History”. Near the bottom, but not nearly as bad as Reality-TV, we have “Musical” and “Documentaries” coming in last place.</p>
+<h1 id="show-exploration">Show Exploration</h1>
+<h3 id="top-20-highest-rated-shows">Top 20 Highest Rated Shows</h3>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="n">tv.data</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">av_rating</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">group_by</span><span class="p">(</span><span class="n">title</span><span class="p">)</span> <span class="o">%&gt;%</span> 
+  <span class="nf">summarize</span><span class="p">(</span><span class="n">avg_rating</span><span class="o">=</span><span class="nf">mean</span><span class="p">(</span><span class="n">av_rating</span><span class="p">),</span> <span class="n">year</span><span class="o">=</span><span class="nf">floor</span><span class="p">(</span><span class="nf">min</span><span class="p">(</span><span class="n">year</span><span class="p">)))</span> <span class="o">%&gt;%</span> 
+  <span class="nf">slice_max</span><span class="p">(</span><span class="n">avg_rating</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="m">20</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">mutate</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="nf">paste</span><span class="p">(</span><span class="n">title</span><span class="p">,</span><span class="s">&#39;(&#39;</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="s">&#39;)&#39;</span><span class="p">))</span> <span class="o">%&gt;%</span>
+  <span class="p">{</span><span class="nf">ggplot</span><span class="p">(</span><span class="n">.,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="nf">fct_rev</span><span class="p">(</span><span class="nf">factor</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="n">title</span><span class="p">)),</span> <span class="n">y</span><span class="o">=</span><span class="n">avg_rating</span><span class="p">))</span> <span class="o">+</span>
+      <span class="nf">geom_col</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s">&#34;#09C59D&#34;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">xlab</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ylab</span><span class="p">(</span><span class="s">&#39;Average Rating&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ggtitle</span><span class="p">(</span><span class="s">&#39;Top 20 Shows Average Ratings&#39;</span><span class="p">)</span> <span class="o">+</span>
+      <span class="nf">geom_text</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="nf">sprintf</span><span class="p">(</span><span class="s">&#34;%.2f&#34;</span><span class="p">,</span> <span class="n">avg_rating</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">avg_rating</span> <span class="o">+</span> <span class="m">0.3</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="m">3</span><span class="p">,</span> <span class="n">vjust</span><span class="o">=</span><span class="m">0.3</span><span class="p">)</span> <span class="o">+</span> <span class="nf">coord_flip</span><span class="p">()}</span>
+</code></pre></div><p><figure style="flex-grow: 141; flex-basis: 340px">
+		<a href="/p/tvgoldenage/img/top_20_rate.jpg" data-size="678x478"><img src="/p/tvgoldenage/img/top_20_rate.jpg"
+				
+				width="678"
+				height="478"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>Looking at the above graph, we can see that the 3 highest rated shows are all from the 1990’s (which is surprising given the earlier findings that shows prior to 2001 average ratings below 8.0). However, 16 of the 17 other top 20 shows are all post-2001, which validates our earlier findings. And even further, all of these shows are post-2010, which again makes sense since 2010+ had the highest average yearly ratings for TV shows from earlier findings.</p>
+<h3 id="top-20-most-shared-shows">Top 20 Most Shared Shows</h3>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="n">tv.data</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">share</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">group_by</span><span class="p">(</span><span class="n">title</span><span class="p">)</span> <span class="o">%&gt;%</span> 
+  <span class="nf">summarize</span><span class="p">(</span><span class="n">avg_sharing</span><span class="o">=</span><span class="nf">mean</span><span class="p">(</span><span class="n">share</span><span class="p">),</span> <span class="n">year</span><span class="o">=</span><span class="nf">floor</span><span class="p">(</span><span class="nf">min</span><span class="p">(</span><span class="n">year</span><span class="p">)))</span> <span class="o">%&gt;%</span> 
+  <span class="nf">slice_max</span><span class="p">(</span><span class="n">avg_sharing</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="m">20</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">mutate</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="nf">paste</span><span class="p">(</span><span class="n">title</span><span class="p">,</span><span class="s">&#39;(&#39;</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="s">&#39;)&#39;</span><span class="p">))</span> <span class="o">%&gt;%</span>
+  <span class="p">{</span><span class="nf">ggplot</span><span class="p">(</span><span class="n">.,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="nf">fct_rev</span><span class="p">(</span><span class="nf">factor</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="n">title</span><span class="p">)),</span> <span class="n">y</span><span class="o">=</span><span class="n">avg_sharing</span><span class="p">))</span> <span class="o">+</span>
+      <span class="nf">geom_col</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s">&#34;#C50981&#34;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">xlab</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ylab</span><span class="p">(</span><span class="s">&#39;Average Sharing&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ggtitle</span><span class="p">(</span><span class="s">&#39;Top 20 Shared Shows&#39;</span><span class="p">)</span> <span class="o">+</span>
+      <span class="nf">geom_text</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="nf">sprintf</span><span class="p">(</span><span class="s">&#34;%.2f&#34;</span><span class="p">,</span> <span class="n">avg_sharing</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">avg_sharing</span> <span class="o">+</span> <span class="m">1.2</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="m">3</span><span class="p">,</span> <span class="n">vjust</span><span class="o">=</span><span class="m">0.3</span><span class="p">)</span> <span class="o">+</span> <span class="nf">coord_flip</span><span class="p">()}</span>
+</code></pre></div><p><figure style="flex-grow: 140; flex-basis: 336px">
+		<a href="/p/tvgoldenage/img/top_20_share.jpg" data-size="676x482"><img src="/p/tvgoldenage/img/top_20_share.jpg"
+				
+				width="676"
+				height="482"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>Looking at the above graph, similar to the top 20 highest rated shows, the top 3 are all 1990’s era. On top of this, there seems to be an even distribution of 1990’s and 2000’s shows, which leads me to wonder if there are less shares for shows as years increases? There also does not seem to be much overlap with shows that have high rating and shows with high shares (maybe people already know about the high rated shows so they are shared less?).</p>
+<h3 id="yearly-average-share">Yearly Average Share</h3>
+<div class="highlight"><pre class="chroma"><code class="language-R" data-lang="R"><span class="n">tv.data</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">share</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">group_by</span><span class="p">(</span><span class="n">year</span><span class="p">)</span> <span class="o">%&gt;%</span> 
+  <span class="nf">summarize</span><span class="p">(</span><span class="n">yearly_shares</span> <span class="o">=</span> <span class="nf">mean</span><span class="p">(</span><span class="n">share</span><span class="p">))</span> <span class="o">%&gt;%</span> 
+  <span class="p">{</span> <span class="nf">ggplot</span><span class="p">(</span><span class="n">.,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="nf">factor</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="n">year</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">yearly_shares</span><span class="p">))</span> <span class="o">+</span> 
+      <span class="nf">geom_point</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s">&#34;#09C59D&#34;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="m">3</span><span class="p">)</span> <span class="o">+</span>
+      <span class="nf">xlab</span><span class="p">(</span><span class="s">&#39;Year&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ylab</span><span class="p">(</span><span class="s">&#39;Average Yearly Share&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nf">ggtitle</span><span class="p">(</span><span class="s">&#39;Average Share per Year &#39;</span><span class="p">)</span> <span class="o">+</span>
+      <span class="nf">theme</span><span class="p">(</span><span class="n">axis.text.x</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">angle</span> <span class="o">=</span> <span class="m">90</span><span class="p">,</span> <span class="n">vjust</span> <span class="o">=</span> <span class="m">0.5</span><span class="p">))</span> <span class="o">+</span>
+      <span class="nf">geom_text</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="nf">sprintf</span><span class="p">(</span><span class="s">&#34;%.1f&#34;</span><span class="p">,</span> <span class="n">yearly_shares</span><span class="p">),</span><span class="n">y</span><span class="o">=</span><span class="n">yearly_shares</span> <span class="o">+</span> <span class="m">0.4</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="m">3</span><span class="p">,</span> <span class="n">vjust</span><span class="o">=</span><span class="m">0.3</span><span class="p">)}</span>
+</code></pre></div><p><figure style="flex-grow: 139; flex-basis: 335px">
+		<a href="/p/tvgoldenage/img/yearly_share.jpg" data-size="674x482"><img src="/p/tvgoldenage/img/yearly_share.jpg"
+				
+				width="674"
+				height="482"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>My question from the previous section was correct: It does seem that as we progress through the years, people are sharing shows less. This is an interesting finding since it would seem today we have easier ways to share shows: social media, texting, etc. Maybe with all these new inventions there is less human interaction, but who knows.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p><figure style="flex-grow: 150; flex-basis: 360px">
+		<a href="/p/tvgoldenage/img/conc.jpg" data-size="849x566"><img src="/p/tvgoldenage/img/conc.jpg"
+				
+				width="849"
+				height="566"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>Overall, the findings from this project were very interesting. Seeing how more shows began to occur as the years increased was expected, with platforms such as YouTube, Netflix, Hulu, etc. And average rating increasing as years increased was also not a suprise, as I expected the more &ldquo;modern&rdquo; shows would have slightly better overall production. However, it was interesting to see that the top 3 shows with the highest average rating were all from the 1990&rsquo;s as well as the top 4 shared shows being from the same era. With average shares decreasing as the years increased, could this be due to more shows being produced and therefore less average shares per show? Further exploration will be needed to answer this question, but our main question here is &ldquo;Does TV have a golden age?&rdquo;. From the data, if we used average yearly rating we could say yes; and it&rsquo;s currently happening right now. However, if we used yearly shares and highest rated shows then we could also say yes; during the 1990&rsquo;s shows were at their peak of being talked about among people and could be considered the Golden Age of television. This question is up to the individual to answer, and it all depends on what one would consider <em>The Golden Age</em>.</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/tidytuesday/">TidyTuesday</a>
+        
+            <a href="/tags/r/">R</a>
+        
+    </section>
+
+
+    </footer>
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/gpuscraping/">
+        
+        
+            <div class="article-image">
+                <img src="/p/gpuscraping/img/banner.f92c3686a581e36a20d48dbd8254f38f_huda43a43d3a89ed86863926de204a0975_2317027_250x150_fill_box_smart1_2.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="gpuscraping" 
+                        data-hash="md5-&#43;Sw2hqWB42og1I29glTzjw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Web Scraping GPU Information with Rvest</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2021 Derek Helms
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="2.3.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

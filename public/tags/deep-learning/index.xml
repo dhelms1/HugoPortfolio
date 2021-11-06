@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Deep Learning on Derek Helms</title>
+    <link>/tags/deep-learning/</link>
+    <description>Recent content in Deep Learning on Derek Helms</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 10 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/deep-learning/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Brain Tumor Detection using SageMaker &amp; TensorFlow</title>
+      <link>/p/braintumor/</link>
+      <pubDate>Mon, 10 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/p/braintumor/</guid>
+      <description>Original GitHub Repository
+ Introduction MRI scans are one of the main tools used for analyzing tumors in the human brain. Huge amounts of image data are generated through these scans, which need to be examined by a radiologist, and can be susceptible to diagnosis error due to complex MRI scans. This is where the application of neural networks come in. Through Convolutional Neural Networks, we are able to process these scans in order to extract low level features that can help us correctly classifying and diagnose brain tumors.</description>
+    </item>
+    
+  </channel>
+</rss>

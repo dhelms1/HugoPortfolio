@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Derek Helms</title>
+    <link>/post/</link>
+    <description>Recent content in Posts on Derek Helms</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 29 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Web Scraping GPU Information with Rvest</title>
+      <link>/p/gpuscraping/</link>
+      <pubDate>Tue, 29 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/p/gpuscraping/</guid>
+      <description>Original GitHub Repository
+ So Close&amp;hellip; Yet So Far If you&amp;rsquo;re reading this, then most likely you too have some type of interest in machine learning or data science. And you know that GPUs are amazing for speeding up the processes you do in this fields, especially for Deep Learning. However if you&amp;rsquo;re currently in the market for one of these GPUs, especially the new NVIDIA RTX Series which would be PERFECT for Deep Learning projects, you know how impossible it is to find one of them (special thanks to all the crypto miners and resellers out there).</description>
+    </item>
+    
+    <item>
+      <title>#tidytuesday: TV&#39;s Golden Age</title>
+      <link>/p/tvgoldenage/</link>
+      <pubDate>Tue, 08 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/p/tvgoldenage/</guid>
+      <description>Original GitHub Repository
+ Introduction Welcome! This is the first of many posts for the #tidytuesday data exploration project in which I explore a smaller data set with no goal of creating a model but strictly to become more familiar with R and packages such as dplyr, tidyverse, &amp;amp; ggplot. In this week, we&amp;rsquo;ll explore the IMDb data set that recorded information such as seasons, date, average rating, and shares for TV dramas from 1990 to 2018.</description>
+    </item>
+    
+    <item>
+      <title>2021 Summer Undergraduate Research Goals</title>
+      <link>/p/researchgoals/</link>
+      <pubDate>Tue, 01 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/p/researchgoals/</guid>
+      <description>Introduction 6/1/2021 marks the first day of my Research Intership with the CHC (even though I&amp;rsquo;m writing this almost 2 weeks later) and I have some mixed emotions about how I feel about it. I&amp;rsquo;m not saying I don&amp;rsquo;t like the program (it&amp;rsquo;s quite the opposite), I&amp;rsquo;m beyond grateful for the opportunity. But I am nervous. Will I be able to keep up with everyone whose already been working on the project?</description>
+    </item>
+    
+    <item>
+      <title>Brain Tumor Detection using SageMaker &amp; TensorFlow</title>
+      <link>/p/braintumor/</link>
+      <pubDate>Mon, 10 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/p/braintumor/</guid>
+      <description>Original GitHub Repository
+ Introduction MRI scans are one of the main tools used for analyzing tumors in the human brain. Huge amounts of image data are generated through these scans, which need to be examined by a radiologist, and can be susceptible to diagnosis error due to complex MRI scans. This is where the application of neural networks come in. Through Convolutional Neural Networks, we are able to process these scans in order to extract low level features that can help us correctly classifying and diagnose brain tumors.</description>
+    </item>
+    
+    <item>
+      <title>Stroke Prediction: Battle of the Learning Methods</title>
+      <link>/p/strokeprediction/</link>
+      <pubDate>Sun, 21 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/p/strokeprediction/</guid>
+      <description>Original GitHub Repository
+ Alright, I&amp;rsquo;ll admit it&amp;hellip; It sounded a lot cooler in my head. &amp;ldquo;Battle of the Learning Methods: Statistical vs Machine Learning&amp;rdquo;. Man vs. Machine (well not really, but you get the point). A test of speed, strength, learning, and maybe a little bit of overfitting. Maybe it&amp;rsquo;s just me that&amp;rsquo;s excited about the project, but I finally get to implement what I learn in school against what I do in my free time.</description>
+    </item>
+    
+    <item>
+      <title>Global Food Production vs. Population: Predicting the Future</title>
+      <link>/p/prodvspop/</link>
+      <pubDate>Tue, 26 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/p/prodvspop/</guid>
+      <description>Original GitHub Repository
+Note: An in-depth data exploration section was also created, but will not be explored in this post. I will mainly focus on the modeling section, please refer to the GitHub link above for the DataExploration.ipynb notebook.
+ The More The Merrier&amp;hellip; Right? The current world population is nearly 7.8 billion people, and this number is estimated to rise to around 9.7 billion (or higher) in the year 2050.</description>
+    </item>
+    
+  </channel>
+</rss>

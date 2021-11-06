@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Regression on Derek Helms</title>
+    <link>/tags/regression/</link>
+    <description>Recent content in Regression on Derek Helms</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 26 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/regression/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Global Food Production vs. Population: Predicting the Future</title>
+      <link>/p/prodvspop/</link>
+      <pubDate>Tue, 26 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/p/prodvspop/</guid>
+      <description>Original GitHub Repository
+Note: An in-depth data exploration section was also created, but will not be explored in this post. I will mainly focus on the modeling section, please refer to the GitHub link above for the DataExploration.ipynb notebook.
+ The More The Merrier&amp;hellip; Right? The current world population is nearly 7.8 billion people, and this number is estimated to rise to around 9.7 billion (or higher) in the year 2050.</description>
+    </item>
+    
+  </channel>
+</rss>

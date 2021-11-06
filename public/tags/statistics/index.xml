@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Statistics on Derek Helms</title>
+    <link>/tags/statistics/</link>
+    <description>Recent content in Statistics on Derek Helms</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 21 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/statistics/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Stroke Prediction: Battle of the Learning Methods</title>
+      <link>/p/strokeprediction/</link>
+      <pubDate>Sun, 21 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/p/strokeprediction/</guid>
+      <description>Original GitHub Repository
+ Alright, I&amp;rsquo;ll admit it&amp;hellip; It sounded a lot cooler in my head. &amp;ldquo;Battle of the Learning Methods: Statistical vs Machine Learning&amp;rdquo;. Man vs. Machine (well not really, but you get the point). A test of speed, strength, learning, and maybe a little bit of overfitting. Maybe it&amp;rsquo;s just me that&amp;rsquo;s excited about the project, but I finally get to implement what I learn in school against what I do in my free time.</description>
+    </item>
+    
+  </channel>
+</rss>

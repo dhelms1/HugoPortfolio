@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='In this project, I use R and its library Rvest to scrape Newegg for information about GPUs including price, rating, and model specs. The main emphasis of this project is Web Scraping, Data Cleaning, and Exploratory Data Analysis.'><title>Web Scraping GPU Information with Rvest</title>
+
+<link rel='canonical' href='/p/gpuscraping/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='Web Scraping GPU Information with Rvest'>
+<meta property='og:description' content='In this project, I use R and its library Rvest to scrape Newegg for information about GPUs including price, rating, and model specs. The main emphasis of this project is Web Scraping, Data Cleaning, and Exploratory Data Analysis.'>
+<meta property='og:url' content='/p/gpuscraping/'>
+<meta property='og:site_name' content='Derek Helms'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='R' /><meta property='article:tag' content='Web Scraping' /><meta property='article:published_time' content='2021-06-29T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-06-29T00:00:00&#43;00:00'/><meta property='og:image' content='/p/gpuscraping/img/banner.png' />
+<meta name="twitter:title" content="Web Scraping GPU Information with Rvest">
+<meta name="twitter:description" content="In this project, I use R and its library Rvest to scrape Newegg for information about GPUs including price, rating, and model specs. The main emphasis of this project is Web Scraping, Data Cleaning, and Exploratory Data Analysis."><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='/p/gpuscraping/img/banner.png' /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+    </head>
+    <body class="">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "light");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.body.dataset.scheme = 'dark';
+        } else {
+            document.body.dataset.scheme = 'light';
+        }
+    })();
+</script><div class="container main-container flex on-phone--column extended article-page with-toolbar">
+            <aside class="sidebar left-sidebar sticky">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header class="site-info">
+        
+        <h2 class="site-description"></h2>
+    </header>
+
+    <ol class="menu" id="main-menu">
+        
+        
+        
+
+        <li >
+            <a href='/'>
+                
+                    <svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px"><path d="M 12 2.0996094 L 1 12 L 4 12 L 4 21 L 11 21 L 11 15 L 13 15 L 13 21 L 20 21 L 20 12 L 23 12 L 12 2.0996094 z M 12 4.7910156 L 18 10.191406 L 18 11 L 18 19 L 15 19 L 15 13 L 9 13 L 9 19 L 6 19 L 6 10.191406 L 12 4.7910156 z"/></svg>
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='/about-myself/'>
+                
+                    <svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px"><path d="M 10 0 C 6.24 -0.02 2.97 3.1 3 7 L 3 8 L 3 11.748047 C 2.4701855 12.225307 2.0097656 13.000361 2.0097656 14.011719 C 2.0097656 15.27649 2.7280504 16.191398 3.4042969 16.585938 C 3.7657984 16.796847 3.8681582 16.757564 4.125 16.810547 C 5.6269646 19.927424 8.5402409 22.551214 11.867188 22.994141 L 12 23.011719 L 12.132812 22.994141 C 15.459499 22.550139 18.373013 19.926518 19.875 16.810547 C 20.131842 16.757567 20.234202 16.796847 20.595703 16.585938 C 21.27195 16.191398 21.990234 15.27649 21.990234 14.011719 C 21.990234 12.746948 21.27195 11.830087 20.595703 11.435547 C 20.297075 11.261319 20.232618 11.304211 20 11.248047 L 20 6 C 20 3.791 18.209 2 16 2 L 15 2 L 15 2.0097656 C 15 2.0097656 13.98 0 10 0 z M 12.445312 8 L 13 8 L 15 8 C 16.630274 8 17.949827 9.3018298 17.992188 10.921875 L 17.992188 13.013672 L 19.142578 13.013672 C 19.148378 13.014264 19.368026 13.035792 19.587891 13.164062 C 19.810644 13.294023 19.990234 13.37849 19.990234 14.011719 C 19.990234 14.644948 19.810644 14.727462 19.587891 14.857422 C 19.365137 14.987382 19.136719 15.009766 19.136719 15.009766 L 18.519531 15.044922 L 18.275391 15.611328 C 17.128688 18.256067 14.48056 20.569091 12 20.96875 C 9.5197032 20.569931 6.8713505 18.257043 5.7246094 15.611328 L 5.4804688 15.044922 L 4.8632812 15.009766 C 4.8632812 15.009766 4.6348629 14.987386 4.4121094 14.857422 C 4.1893558 14.727462 4.0097656 14.644948 4.0097656 14.011719 C 4.0097656 13.37849 4.1893558 13.294023 4.4121094 13.164062 C 4.6319738 13.035789 4.8516269 13.014264 4.8574219 13.013672 L 6.0078125 13.013672 L 6.0078125 10 L 9 10 C 10.477 10 11.752312 9.191 12.445312 8 z"/></svg>
+                
+                <span>About Myself</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='https://www.linkedin.com/in/derek-helms'>
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                
+                <span>LinkedIn</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='https://github.com/dhelms1'>
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                
+                <span>GitHub</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='/archives/'>
+                
+                    <?xml version="1.0"?><svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px">    <path d="M13.172,2H6C4.9,2,4,2.9,4,4v16c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2V8.828c0-0.53-0.211-1.039-0.586-1.414l-4.828-4.828 C14.211,2.211,13.702,2,13.172,2z M18.5,9H13V3.5L18.5,9z"/></svg>
+                
+                <span>Archive</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='/search/'>
+                
+                    <?xml version="1.0"?><svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px">    <path d="M 9 2 C 5.1458514 2 2 5.1458514 2 9 C 2 12.854149 5.1458514 16 9 16 C 10.747998 16 12.345009 15.348024 13.574219 14.28125 L 14 14.707031 L 14 16 L 20 22 L 22 20 L 16 14 L 14.707031 14 L 14.28125 13.574219 C 15.348024 12.345009 16 10.747998 16 9 C 16 5.1458514 12.854149 2 9 2 z M 9 4 C 11.773268 4 14 6.2267316 14 9 C 14 11.773268 11.773268 14 9 14 C 6.2267316 14 4 11.773268 4 9 C 4 6.2267316 6.2267316 4 9 4 z"/></svg>
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+
+        
+            <li id="dark-mode-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                <span>Dark Mode</span>
+            </li>
+        
+    </ol>
+</aside>
+
+            <main class="main full-width">
+    <div id="article-toolbar">
+        <a href="/" class="back-home">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+            <span>Back</span>
+        </a>
+    </div>
+
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/gpuscraping/">
+                <img src="/p/gpuscraping/img/banner_huda43a43d3a89ed86863926de204a0975_2317027_800x0_resize_box_2.png"
+                        srcset="/p/gpuscraping/img/banner_huda43a43d3a89ed86863926de204a0975_2317027_800x0_resize_box_2.png 800w, /p/gpuscraping/img/banner_huda43a43d3a89ed86863926de204a0975_2317027_1600x0_resize_box_2.png 1600w"
+                        width="800" 
+                        height="315" 
+                        loading="lazy"
+                        alt="Featured image of post Web Scraping GPU Information with Rvest" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/r/" >
+                R
+            </a>
+        
+            <a href="/categories/projects/" >
+                Projects
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/gpuscraping/">Web Scraping GPU Information with Rvest</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        In this project, I use R and its library Rvest to scrape Newegg for information about GPUs including price, rating, and model specs. The main emphasis of this project is Web Scraping, Data Cleaning, and Exploratory Data Analysis.
+    </h3>
+    <footer class="article-time">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <time class="article-time--published">Jun 29, 2021</time>
+    </footer></div>
+</header>
+
+    <section class="article-content">
+    <blockquote>
+<p><a class="link" href="https://github.com/dhelms1/gpu_scraping"  target="_blank" rel="noopener"
+    ><strong>Original GitHub Repository</strong></a></p>
+</blockquote>
+<h1 id="so-close-yet-so-far">So Close&hellip; Yet So Far</h1>
+<p>If you&rsquo;re reading this, then most likely you too have some type of interest in machine learning or data science. And you know that GPUs are amazing for speeding up the processes you do in this fields, especially for Deep Learning. However if you&rsquo;re currently in the market for one of these GPUs, especially the new NVIDIA RTX Series which would be PERFECT for Deep Learning projects, you know how impossible it is to find one of them (special thanks to all the crypto miners and resellers out there). So I figured if I can&rsquo;t have one, might as well scrape Newegg for information on a bunch of different graphics cards and do some Data Analysis right? Not my first though, but it did sound like an interesting project. And although I initially wanted to implement it in Python, I figured this would be a great learning opportunity for R especially given my current internship. And so here we are, scraping Newegg for information on GPUs while I patiently wait for them to become available.</p>
+<p>In my many hours of searching the internet about the rules of web scraping and if certain website allow it or not, I find myself asking &ldquo;Am I really suppose to be doing this?&rdquo;. Some people say no, some say it&rsquo;s fine, others just avoid the question and continue their work. I still don&rsquo;t have the answer to this question, but in my attempt to collect the data as ethically as possible I&rsquo;ve taken the following steps:</p>
+<ul>
+<li>Only creating requests ~2 times per day, spaced out by a few hours.</li>
+<li>Keeping the data private on my computer and not uploading for public use.</li>
+<li>No private information is being collected, only product details.</li>
+</ul>
+<p>Each page on Newegg has around 36 results, and even though it has hundreds of pages I only scraped 10 of them over the span of 5 days. I didn&rsquo;t want to create too many requests and overload their site, so I tried to minimize the amount of time I spent sending requests. Hopefully this is ethical, and if not then this all was just hypothetical.</p>
+<h1 id="the-scraping-script">The Scraping Script</h1>
+<p>So basically there are three main categories for which data was scraped: Model Specs (Brand, Series, Memory, etc.), Ratings (Average &amp; Total Number), and Pricing Information (Price, Sale, &amp; Shipping). I&rsquo;ll break down each of these, and the exact code used to collect the data.</p>
+<p>Just a quick note, a lifesaver for this project was the <a class="link" href="https://rvest.tidyverse.org/articles/selectorgadget.html"  target="_blank" rel="noopener"
+    >SelectorGadget</a> from Rvest and part of the tidyverse. Basically instead of having to inspect elements using html code, this allowed me to find css selectors in the page that I needed and extract them below (these are the string passed to the <em>html_nodes()</em> functions).</p>
+<h2 id="gpu-specs">GPU Specs</h2>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">get_model_info</span> <span class="o">&lt;-</span> <span class="nf">function</span><span class="p">(</span><span class="n">gpu_link</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">cols</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#39;Brand&#39;</span><span class="p">,</span> <span class="s">&#39;Model&#39;</span><span class="p">,</span> <span class="s">&#39;Chipset Manufacturer&#39;</span><span class="p">,</span> <span class="s">&#39;GPU Series&#39;</span><span class="p">,</span> <span class="s">&#39;GPU&#39;</span><span class="p">,</span> <span class="s">&#39;Core Clock&#39;</span><span class="p">,</span> <span class="s">&#39;Boost Clock&#39;</span><span class="p">,</span> 
+            <span class="s">&#39;Memory Size&#39;</span><span class="p">,</span> <span class="s">&#39;Memory Interface&#39;</span><span class="p">,</span> <span class="s">&#39;Memory Type&#39;</span><span class="p">,</span> <span class="s">&#39;Date First Available&#39;</span><span class="p">)</span>
+  <span class="n">model_info</span> <span class="o">&lt;-</span> <span class="nf">read_html</span><span class="p">(</span><span class="n">gpu_link</span><span class="p">)</span> <span class="o">%&gt;%</span> 
+    <span class="nf">html_nodes</span><span class="p">(</span><span class="s">&#34;table , #product-mini-feature .tab-nav:nth-child(2)&#34;</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">html_table</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
+  <span class="n">info_df</span> <span class="o">&lt;-</span> <span class="nf">data.frame</span><span class="p">(</span><span class="n">tmp</span><span class="o">=</span><span class="nf">t</span><span class="p">(</span><span class="nf">do.call</span><span class="p">(</span><span class="n">rbind</span><span class="p">,</span> <span class="n">model_info</span><span class="p">)))</span> <span class="o">%&gt;%</span> <span class="nf">row_to_names</span><span class="p">(</span><span class="n">row_number</span> <span class="o">=</span> <span class="m">1</span><span class="p">)</span>
+  <span class="nf">for </span><span class="p">(</span><span class="n">cname</span> <span class="n">in</span> <span class="n">cols</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nf">if </span><span class="p">(</span><span class="n">cname</span> <span class="o">%notin%</span> <span class="nf">colnames</span><span class="p">(</span><span class="n">info_df</span><span class="p">))</span> <span class="p">{</span>
+      <span class="n">info_df[cname]</span> <span class="o">&lt;-</span> <span class="nf">rep</span><span class="p">(</span><span class="kc">NA</span><span class="p">,</span> <span class="nf">nrow</span><span class="p">(</span><span class="n">info_df</span><span class="p">))</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="n">info_df[cols]</span>
+<span class="p">}</span>
+</code></pre></div><p>So the first piece of information I wanted to pull were specs for each GPU (described in the cols variable above). This wasn&rsquo;t too hard to complete, the string in <em>html_nodes()</em> navigates to the specs tab and pulls the entire table from the website. I then collapsed this into a data frame, and if the specs tab was missing one of the desired pieces of information (from the cols variable), then I would fill the column with NA. The function returned a data frame with the select columns, which was then added to a larger data frame which I will describe later in the Data Collection section.</p>
+<h2 id="gpu-ratings">GPU Ratings</h2>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">get_gpu_ratings</span> <span class="o">&lt;-</span> <span class="nf">function</span><span class="p">(</span><span class="n">gpu_link</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nf">data.frame</span><span class="p">(</span><span class="s">&#39;AvgRating&#39;</span> <span class="o">=</span> <span class="nf">substring</span><span class="p">(</span><span class="nf">unlist</span><span class="p">(</span><span class="nf">strsplit</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="nf">read_html</span><span class="p">(</span><span class="n">gpu_link</span><span class="p">)</span> <span class="o">%&gt;%</span> 
+                              <span class="nf">html_nodes</span><span class="p">(</span><span class="s">&#34;.product-rating&#34;</span><span class="p">)),</span> <span class="s">&#34;rating rating&#34;</span><span class="p">))</span><span class="n">[2]</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">30</span><span class="p">),</span>
+             <span class="s">&#39;NumberOfRatings&#39;</span> <span class="o">=</span> <span class="nf">read_html</span><span class="p">(</span><span class="n">gpu_link</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">html_nodes</span><span class="p">(</span><span class="s">&#34;.product-rating .item-rating-num&#34;</span><span class="p">)</span> <span class="o">%&gt;%</span> 
+                                    <span class="nf">html_text</span><span class="p">()</span> <span class="o">%&gt;%</span> <span class="n">.[1]</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>Now this&hellip; This was true pain to get working. If only Newegg had a normal rating system like every other website out there. But of course they have to put their ratings as &ldquo;eggs&rdquo;, which is creative I will say, but also made pulling this information ridiculously long. I don&rsquo;t expect the above code to make much sense (it doesn&rsquo;t really to me and I&rsquo;m the one who wrote it), but basically I had to read through the raw data without converting it to readable text using <em>html_text()</em>. I couldn&rsquo;t just index it either because each rating appeared at a different point for each gpu. However, the work around this was to split the raw data at the <em>rating rating</em> tag and take the second object, which I then subset ranging from index 10 to 30 to produce this: <code>=&quot;5 out of 5 eggs&quot;&gt;&lt;/</code>. 
+This is an example of rating for a &ldquo;5 star&rdquo; product, which I will now need to clean but that will occur later during the Data Processing section (I probably could have decreased the index range, but I wanted to keep a buffer just in case). Getting the Number of Ratings was much easier, just converting to readable text and taking the first item. I&rsquo;m just glad this part is over, and now we can move onto the Pricing script code.</p>
+<h2 id="gpu-pricing">GPU Pricing</h2>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">get_gpu_pricing</span> <span class="o">&lt;-</span> <span class="nf">function</span><span class="p">(</span><span class="n">page_link</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">page</span> <span class="o">&lt;-</span> <span class="nf">read_html</span><span class="p">(</span><span class="n">page_link</span><span class="p">)</span>
+  <span class="n">tmp_df</span> <span class="o">&lt;-</span> <span class="nf">data.frame</span><span class="p">(</span><span class="s">&#39;Price&#39;</span> <span class="o">=</span> <span class="n">page</span> <span class="o">%&gt;%</span> <span class="nf">html_nodes</span><span class="p">(</span><span class="s">&#39;.price-current&#39;</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">html_text</span><span class="p">())</span>
+  <span class="n">tmp_df</span><span class="o">$</span><span class="n">CurrentSavings</span> <span class="o">&lt;-</span> <span class="n">page</span> <span class="o">%&gt;%</span> <span class="nf">html_nodes</span><span class="p">(</span><span class="s">&#39;.price-save&#39;</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">html_text</span><span class="p">()</span>
+  <span class="n">tmp_df</span><span class="o">$</span><span class="n">Shipping</span> <span class="o">&lt;-</span> <span class="n">page</span> <span class="o">%&gt;%</span> <span class="nf">html_nodes</span><span class="p">(</span><span class="s">&#39;.price-ship&#39;</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">html_text</span><span class="p">()</span>
+  <span class="n">tmp_df</span>
+<span class="p">}</span>
+</code></pre></div><p>We go from the hardest to now the easiest piece of code in this entire project. I wish everything was this straight forward, just a simple css selector and converting to it text and we have all the variables we need. I pulled the current price, the savings tag (saying how much % off an item was), and the shipping cost (either &ldquo;Free&rdquo; or Numeric value). Originally I had tried to also get the original price before it was put on sale and create a new column, where I&rsquo;d fill it with the current price if not on sale and the sale price if on sale but this gave me a lot of issues. The original prices was a different size vector each time and trying to input them was taking more time than I&rsquo;d like to admit, so I skipped this and just stuck with the current price.</p>
+<h2 id="data-collection">Data Collection</h2>
+<p>So as I had previously stated earlier, the data was gathered over a number of days since I only wanted to send a few requests per day. Around 2 pages were scraped per day for a total of 356 observations over the collection period. To save some room I won&rsquo;t include all the code used to gather and combine the data into a single data set, but the general idea was that I created an empty data frame for each script above. I then bind the returned values by rows into a data frame, which then contained 36 observations and the corresponding number of features from above. Below is the code used to do this:</p>
+<p>I would then read in the previously saved raw data, create a new data frame that matched the current layout of the raw data, and then would row bind the two data frames together into a new raw data set. This would be saved, and the process would be repeated for each page (since they were spaced out). At the end of the process, I ended with 356 total observations with 18 features. However, this data was not at all ready to be used for Exploration or Modeling, and that brings us to the cleaning script.</p>
+<h1 id="data-cleaning--regexp">Data Cleaning ❤️ RegExp</h1>
+<p>Okay so maybe not, but there was a good amount of regular expression&rsquo;s used to clean the data. I guess it could be seen as a good thing, but everything read in from the scraping script was put into the data frame as a character. Lot&rsquo;s of which held the numeric values somewhere in a string, such as:</p>
+<p><code>&quot;1241 MHz (OC Mode)1190 MHz (Gaming Mode)1127 MHz (Silent Mode)&quot;</code></p>
+<p>All I wanted was the core clock speed, but this is what I got instead. And yes I thought maybe split it and index, but of course Newegg likes to change the order in which they list the modes so I couldn&rsquo;t do that. But that&rsquo;s besides the current point. I had all the data ready and it&rsquo;s time to get it in the correct format and create any new features that would be necessary. My goal is to maintain around 300 observations (hence why I scraped a little extra) after cleaning up the data. Just for ease of reading and my own sanity, I&rsquo;ll split up the cleaning based on the scripts above.</p>
+<h2 id="gpu-spec-cleaning">GPU Spec Cleaning</h2>
+<p>Luckily, a few features of this data could be left as characters and didn&rsquo;t need much cleaning (<em>Brand</em>, <em>Model</em>, <em>GPU Series</em>, <em>GPU</em>, <em>Memory Interface</em>, &amp; <em>Memory Type</em>). Other features like <em>Chipset Manufacturer</em> and <em>Memory Size</em> only had slight cleaning done to them (Chipset had a single value filtered out and Memory Size was filtered to only keep memory measured in GB, which was all but 4).</p>
+<h4 id="clock-speeds">Clock Speeds</h4>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">raw.data</span> <span class="o">&lt;-</span> <span class="n">raw.data</span> <span class="o">%&gt;%</span> 
+  <span class="nf">mutate</span><span class="p">(</span><span class="n">tmp</span><span class="o">=</span><span class="nf">regmatches</span><span class="p">(</span><span class="n">Core.Clock</span><span class="p">,</span> <span class="nf">gregexpr</span><span class="p">(</span><span class="s">&#34;[[:digit:]]+&#34;</span><span class="p">,</span> <span class="n">Core.Clock</span><span class="p">)),</span>
+         <span class="n">Core.Clock</span><span class="o">=</span><span class="nf">as.numeric</span><span class="p">(</span><span class="nf">lapply</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">min</span><span class="p">)),</span>
+         <span class="n">OC.Core.Clock</span><span class="o">=</span><span class="nf">as.numeric</span><span class="p">(</span><span class="nf">lapply</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="nf">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="nf">ifelse</span><span class="p">(</span><span class="nf">length</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="m">1</span><span class="p">,</span> <span class="nf">max</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="kc">NA</span><span class="p">))))</span> <span class="o">%&gt;%</span> 
+  <span class="nf">select</span><span class="p">(</span><span class="o">-</span><span class="n">tmp</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="n">Page</span><span class="o">:</span><span class="n">Core.Clock</span><span class="p">,</span><span class="n">OC.Core.Clock</span><span class="p">,</span><span class="n">Boost.Clock</span><span class="o">:</span><span class="n">NumberOfRatings</span><span class="p">)</span>
+
+<span class="n">raw.data</span> <span class="o">&lt;-</span> <span class="n">raw.data</span> <span class="o">%&gt;%</span> 
+  <span class="nf">mutate</span><span class="p">(</span><span class="n">tmp</span><span class="o">=</span><span class="nf">regmatches</span><span class="p">(</span><span class="n">Boost.Clock</span><span class="p">,</span> <span class="nf">gregexpr</span><span class="p">(</span><span class="s">&#34;[[:digit:]]+&#34;</span><span class="p">,</span> <span class="n">Boost.Clock</span><span class="p">)),</span>
+         <span class="n">Boost.Clock</span><span class="o">=</span><span class="nf">as.numeric</span><span class="p">(</span><span class="nf">lapply</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">min</span><span class="p">)),</span>
+         <span class="n">OC.Boost.Clock</span><span class="o">=</span><span class="nf">as.numeric</span><span class="p">(</span><span class="nf">lapply</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="nf">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="nf">ifelse</span><span class="p">(</span><span class="nf">length</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="m">1</span><span class="p">,</span> <span class="nf">max</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="kc">NA</span><span class="p">))))</span> <span class="o">%&gt;%</span> 
+  <span class="nf">select</span><span class="p">(</span><span class="o">-</span><span class="n">tmp</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="n">Page</span><span class="o">:</span><span class="n">Boost.Clock</span><span class="p">,</span><span class="n">OC.Boost.Clock</span><span class="p">,</span><span class="n">Memory.Size</span><span class="o">:</span><span class="n">NumberOfRatings</span><span class="p">)</span>
+</code></pre></div><p>So now as I had pointed out earlier, the clock speeds (both core and boost) had been read in as strings. But of course there were multiple values that had to be parsed, which were then extracted into lists of numbers. I decided on the following methods for both the core and boost clock speed features:</p>
+<ul>
+<li><strong>Base</strong>: taking the minimum gave the the lowest measurement within each row, so I just assumed this as the &ldquo;base&rdquo; value.</li>
+<li><strong>OC</strong>: the overclock value was a little more tricky. I couldn&rsquo;t just take the max because then GPUs that couldn&rsquo;t be overclocked had their base value in the OC feature. The solution to this was to ensure there was more than one value in the feature, and if true then we took the max (otherwise we filled in with NA).</li>
+</ul>
+<h4 id="monthyear">Month/Year</h4>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">raw.data</span> <span class="o">&lt;-</span> <span class="n">raw.data</span> <span class="o">%&gt;%</span> 
+  <span class="nf">mutate</span><span class="p">(</span><span class="n">Date.First.Available</span><span class="o">=</span><span class="nf">as.Date</span><span class="p">(</span><span class="n">raw.data</span><span class="o">$</span><span class="n">Date.First.Available</span><span class="p">,</span> <span class="n">format</span> <span class="o">=</span> <span class="s">&#34;%B %d, %Y&#34;</span><span class="p">),</span>
+         <span class="n">Month</span><span class="o">=</span><span class="nf">month</span><span class="p">(</span><span class="n">Date.First.Available</span><span class="p">),</span>
+         <span class="n">Year</span><span class="o">=</span><span class="nf">year</span><span class="p">(</span><span class="n">Date.First.Available</span><span class="p">))</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="o">-</span><span class="n">Date.First.Available</span><span class="p">)</span> <span class="o">%&gt;%</span>
+  <span class="nf">select</span><span class="p">(</span><span class="n">Page</span><span class="o">:</span><span class="n">Memory.Type</span><span class="p">,</span> <span class="n">Month</span><span class="p">,</span> <span class="n">Year</span><span class="p">,</span> <span class="n">Price</span><span class="o">:</span><span class="n">NumberOfRatings</span><span class="p">)</span>
+</code></pre></div><p>Not too much cleaning here either. The original format for the date feature was &ldquo;Month Day, Year&rdquo; which needed to be converted to &ldquo;YYYY-MM-DD&rdquo; before using the lubridate functions. After this, I created features for the Month and Year it was first available (both numeric) then dropped the original Date feature.</p>
+<h2 id="gpu-rating-cleaning">GPU Rating Cleaning</h2>
+<h4 id="average-ratings">Average Ratings</h4>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">raw.data</span> <span class="o">&lt;-</span> <span class="n">raw.data</span> <span class="o">%&gt;%</span> 
+  <span class="nf">mutate</span><span class="p">(</span><span class="n">AvgRating</span><span class="o">=</span><span class="nf">as.numeric</span><span class="p">(</span><span class="nf">lapply</span><span class="p">(</span><span class="n">AvgRating</span><span class="p">,</span> <span class="nf">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="nf">unlist</span><span class="p">(</span><span class="nf">regmatches</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nf">gregexpr</span><span class="p">(</span><span class="s">&#34;[0-9]&#34;</span><span class="p">,</span> <span class="n">x</span><span class="p">)))</span><span class="n">[1]</span><span class="p">)))</span>
+</code></pre></div><p>As I had said earlier, the Average Ratings were in a bit of a strange format. Each review had the form <code>=“[ ] out of 5 eggs”&gt;&lt;/</code> where [ ] refers to the Average Rating. To get this value, I used a regular expression to get the first numeric value appearing in the string, unlisted it, and converted to numeric. Voila, we now have our rating in the correct format.</p>
+<h4 id="number-of-ratings">Number of Ratings</h4>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">raw.data</span> <span class="o">&lt;-</span> <span class="n">raw.data</span> <span class="o">%&gt;%</span> 
+  <span class="nf">mutate</span><span class="p">(</span><span class="n">NumberOfRatings</span><span class="o">=</span><span class="nf">as.numeric</span><span class="p">(</span><span class="nf">gsub</span><span class="p">(</span><span class="s">&#34;\\(|\\)&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="n">NumberOfRatings</span><span class="p">)))</span>
+</code></pre></div><p>Another simple cleaning, the number of ratings had parentheses around them and so I substituted either &ldquo;(&rdquo; or &ldquo;)&rdquo; with &quot;&quot; to remove them and convert to numeric.</p>
+<h2 id="gpu-pricing-cleaning">GPU Pricing Cleaning</h2>
+<h4 id="price">Price</h4>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">raw.data</span> <span class="o">&lt;-</span> <span class="n">raw.data</span> <span class="o">%&gt;%</span> 
+  <span class="nf">mutate</span><span class="p">(</span><span class="n">Price</span><span class="o">=</span><span class="nf">as.numeric</span><span class="p">(</span><span class="nf">lapply</span><span class="p">(</span><span class="n">Price</span><span class="p">,</span> <span class="nf">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="nf">gsub</span><span class="p">(</span><span class="s">&#34;\\$&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nf">unlist</span><span class="p">(</span><span class="nf">str_split</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;\\s+&#39;</span><span class="p">))</span><span class="n">[1]</span><span class="p">))))</span>
+</code></pre></div><p>This one was a little tricky, but the Price feature had the following initial format <code>$1,061.99 (11 Offers)–</code>. The way I handled this was to split on the space and take the first element from this vector, which I then substituted the &ldquo;$&rdquo; for empty space and finally converted the values to numeric. Initially I had wanted to extract the numeric values similar to ratings above, but this also split on the period and I was losing the cent values.</p>
+<h4 id="current-savings">Current Savings</h4>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">raw.data</span> <span class="o">&lt;-</span> <span class="n">raw.data</span> <span class="o">%&gt;%</span> 
+  <span class="nf">mutate</span><span class="p">(</span><span class="n">tmp</span><span class="o">=</span><span class="nf">gsub</span><span class="p">(</span><span class="s">&#34;%&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nf">regmatches</span><span class="p">(</span><span class="n">CurrentSavings</span><span class="p">,</span> <span class="nf">gregexpr</span><span class="p">(</span><span class="s">&#34;[0-9]*%&#34;</span><span class="p">,</span> <span class="n">CurrentSavings</span><span class="p">))),</span>
+         <span class="n">CurrentSavings</span><span class="o">=</span><span class="nf">as.numeric</span><span class="p">(</span><span class="nf">lapply</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="nf">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="nf">ifelse</span><span class="p">(</span><span class="n">rlang</span><span class="o">::</span><span class="nf">is_empty</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="kc">NA</span><span class="p">,</span> <span class="n">x</span><span class="p">))))</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="o">-</span><span class="n">tmp</span><span class="p">)</span>
+</code></pre></div><p>At first this one was also a little tricky, as there were two values formats this feature had: <code>Save: 14%</code> and <code>Sale Ends in 7 Hours - Save: 8%</code>. So again I couldn&rsquo;t just take the first number, and the solution for this was to look for patterns that were numeric and followed by a % sign. I then removed the % sign, filling non-sale items with NA, and finally converted to numeric.</p>
+<h4 id="shipping-fees">Shipping Fees</h4>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">raw.data</span> <span class="o">&lt;-</span> <span class="n">raw.data</span> <span class="o">%&gt;%</span> 
+  <span class="nf">mutate</span><span class="p">(</span><span class="n">Shipping</span><span class="o">=</span><span class="nf">recode</span><span class="p">(</span><span class="n">Shipping</span><span class="p">,</span> <span class="s">&#34;Free Shipping&#34;</span> <span class="o">=</span> <span class="s">&#34;0&#34;</span><span class="p">),</span>
+         <span class="n">tmp</span><span class="o">=</span><span class="nf">ifelse</span><span class="p">(</span><span class="n">Shipping</span> <span class="o">!=</span> <span class="s">&#34;0&#34;</span><span class="p">,</span> <span class="nf">regmatches</span><span class="p">(</span><span class="n">Shipping</span><span class="p">,</span> <span class="nf">gregexpr</span><span class="p">(</span><span class="s">&#34;\\$[0-9]*.[0-9]*&#34;</span><span class="p">,</span> <span class="n">Shipping</span><span class="p">)),</span> <span class="n">Shipping</span><span class="p">),</span>
+         <span class="n">Shipping</span><span class="o">=</span><span class="nf">as.numeric</span><span class="p">(</span><span class="nf">gsub</span><span class="p">(</span><span class="s">&#34;\\$&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)))</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="o">-</span><span class="n">tmp</span><span class="p">)</span>
+</code></pre></div><p>This one wasn&rsquo;t too bad either, a lot of the GPUs had free shipping (which I replaced with 0 since there was no cost). The general format for this feature was <code>$39.99 Shipping</code>, so I used a regular expression to find a pattern of <code>\\$[0-9]*.[0-9]*</code>. I then stripped the $ off of the string and converted to numeric.</p>
+<h3 id="final-cleaning-na-filtering">Final Cleaning (NA Filtering)</h3>
+<div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">raw.data</span> <span class="o">&lt;-</span> <span class="n">raw.data</span> <span class="o">%&gt;%</span> <span class="nf">mutate</span><span class="p">(</span><span class="n">na.percent</span><span class="o">=</span><span class="nf">round</span><span class="p">(</span><span class="nf">rowSums</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">.)</span><span class="p">)</span><span class="o">/</span><span class="nf">ncol</span><span class="p">(</span><span class="n">.)</span><span class="p">,</span> <span class="m">4</span><span class="p">)</span><span class="o">*</span><span class="m">100</span><span class="p">)</span> <span class="o">%&gt;%</span> 
+  <span class="nf">filter</span><span class="p">(</span><span class="n">na.percent</span> <span class="o">&lt;</span> <span class="m">30</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="o">-</span><span class="n">na.percent</span><span class="p">)</span>
+</code></pre></div><p>The final step. Although I don&rsquo;t have a solid reason as to why I chose to keep all values with less than 30% of their data missing, that&rsquo;s what I chose to do. Doing this took away the most observations of all the data cleaning, pushing us from 351 to 288 final observations.</p>
+<p>So a bit under my initial goal, but close enough. We now have 288 observations with 21 features that are ready to be explored.</p>
+<h1 id="data-exploration">Data Exploration</h1>
+<p>Okay so I know I said that I wasn&rsquo;t going to upload the data for privacy reasons, but I figured showing a few observations would be fine (just to get a feel for the general layout of the data).</p>
+<p><figure style="flex-grow: 525; flex-basis: 1260px">
+		<a href="/p/gpuscraping/img/Head.png" data-size="2059x392"><img src="/p/gpuscraping/img/Head.png"
+				
+				width="2059"
+				height="392"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>This is the final cleaned data, and it&rsquo;s ready to explore. I&rsquo;ll go over a few of the main features in the data set and some aggregated graphs/tables. The main purpose of this project was web scraping and data cleaning, but it&rsquo;s also important to actually use the data in exploration.</p>
+<h2 id="brands">Brands</h2>
+<p><figure style="flex-grow: 100; flex-basis: 240px">
+		<a href="/p/gpuscraping/img/Brand.png" data-size="500x500"><img src="/p/gpuscraping/img/Brand.png"
+				
+				width="500"
+				height="500"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure> <figure style="flex-grow: 140; flex-basis: 336px">
+		<a href="/p/gpuscraping/img/BrandYearPrice.png" data-size="700x500"><img src="/p/gpuscraping/img/BrandYearPrice.png"
+				
+				width="700"
+				height="500"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>As we can see, mainly 4 brands are responsible for the majority of the GPUs within our data. MSI, ASUS, GIGABYTE, and EVGA have a clear lead on the number of GPUs present on NewEgg. If we were to look at the average price over the past few years for each of these brands, there is no clear pattern but it does seem that in 2021 and 2021 the average prices seem to be stabilizing and within approximately $100 of each other. One more aspect I wanted to look at is the average review for each brand:</p>
+<table>
+<thead>
+<tr>
+<th>Brand</th>
+<th>Rating</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EVGA</td>
+<td>4.52</td>
+</tr>
+<tr>
+<td>ASUS</td>
+<td>4.35</td>
+</tr>
+<tr>
+<td>MSI</td>
+<td>4.32</td>
+</tr>
+<tr>
+<td>GIGABYTE</td>
+<td>4.20</td>
+</tr>
+</tbody>
+</table>
+<p>Although there is now huge difference in rating either, EVGA does seem to be the leader by a bit. ASUS and MSI and nearly tied, and GIGABYTE trails behind them by a small amount.</p>
+<h2 id="gpus">GPUs</h2>
+<p><figure style="flex-grow: 100; flex-basis: 240px">
+		<a href="/p/gpuscraping/img/GPUs.png" data-size="500x500"><img src="/p/gpuscraping/img/GPUs.png"
+				
+				width="500"
+				height="500"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure> <figure style="flex-grow: 100; flex-basis: 240px">
+		<a href="/p/gpuscraping/img/GPUSeries.png" data-size="500x500"><img src="/p/gpuscraping/img/GPUSeries.png"
+				
+				width="500"
+				height="500"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>If we look at the most common GPUs in our data set we can see the majority of them are GeForce, with only the Radeon RX 6700 XT being in the top 11. However this does not carry over to the most common GPU Series, which seems to be split 6 to 5 for NVIDIA and AMD (respectively). The GTX 10 Series is the most common, which makes since given how long they have been on the market. I also wanted to look into the highest rated GPUs:</p>
+<p><figure style="flex-grow: 176; flex-basis: 424px">
+		<a href="/p/gpuscraping/img/GPURatings.png" data-size="992x561"><img src="/p/gpuscraping/img/GPURatings.png"
+				
+				width="992"
+				height="561"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>The top 15 rated GPUs (for the most part) all fall under the GeForce Series, except the Radeon HD 5870. Which is an interesting find because it only has 1 GB of memory size, cost $325, and does not have good performance (from what I saw on YouTube it was averaging below 30 FPS on many modern games). Yet there are 239 reviews with an average of 5 stars&hellip; Maybe there&rsquo;s something I&rsquo;m missing here but that blows my mind. Besides that, many of these remaining GPUs are still popular to this day being in the GTX 10, 16, and 20 Series. I also filtered these results to have at least 30 ratings since GPUs, with let&rsquo;s say 3 total ratings of 5 stars, aren&rsquo;t as reliable to be &ldquo;top rated&rdquo;.</p>
+<p><figure style="flex-grow: 403; flex-basis: 967px">
+		<a href="/p/gpuscraping/img/SeriesSpecs.png" data-size="992x246"><img src="/p/gpuscraping/img/SeriesSpecs.png"
+				
+				width="992"
+				height="246"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>I also pulled an average overview of the specs for the 6 most common GPU series in the data. Although the NVIDIA cards seem to be more expensive than AMD, they also have a higher average rating. If memory size was essential, the AMD RX 6000 Series average 16 GB for only $360 which seems like a really good deal (but AMD also isn&rsquo;t compatible with CUDA so keep that in mind).</p>
+<h2 id="clock-speed">Clock Speed</h2>
+<p><figure style="flex-grow: 100; flex-basis: 240px">
+		<a href="/p/gpuscraping/img/CoreClock.png" data-size="500x500"><img src="/p/gpuscraping/img/CoreClock.png"
+				
+				width="500"
+				height="500"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure> <figure style="flex-grow: 100; flex-basis: 240px">
+		<a href="/p/gpuscraping/img/OCCoreClock.png" data-size="500x500"><img src="/p/gpuscraping/img/OCCoreClock.png"
+				
+				width="500"
+				height="500"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p><figure style="flex-grow: 100; flex-basis: 240px">
+		<a href="/p/gpuscraping/img/BoostClock.png" data-size="500x500"><img src="/p/gpuscraping/img/BoostClock.png"
+				
+				width="500"
+				height="500"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure> <figure style="flex-grow: 100; flex-basis: 240px">
+		<a href="/p/gpuscraping/img/OCBoostClock.png" data-size="500x500"><img src="/p/gpuscraping/img/OCBoostClock.png"
+				
+				width="500"
+				height="500"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>There really isn&rsquo;t too much to say about this information. The core clock speed is less than the boost clock speed on average (expected), and the overclocked core clock speed is less than the overclocked boost clock speed on average (expected). I did however have to look into the boost clock value of 5000 MHz, which belongs to the AMD FirePro V7900 and was not an error (which I thought it was). It goes from a core clock of 1250 MHz to a boost clock of 5000 MHz, which is also interesting given it only has 2GB of memory size.</p>
+<h2 id="price-1">Price</h2>
+<p><figure style="flex-grow: 275; flex-basis: 660px">
+		<a href="/p/gpuscraping/img/Price.png" data-size="1100x400"><img src="/p/gpuscraping/img/Price.png"
+				
+				width="1100"
+				height="400"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>For the most part, the majority of GPUs in the data are below $1000 and seem to cost an average of roughly $500. However, we have a single observation for a GPU that costs over $3000. This had me wondering, what on Earth could cost that much money? Which brought me to examine the 15 most expensive GPUs in the data:</p>
+<p><figure style="flex-grow: 116; flex-basis: 280px">
+		<a href="/p/gpuscraping/img/ExpGpu.png" data-size="700x600"><img src="/p/gpuscraping/img/ExpGpu.png"
+				
+				width="700"
+				height="600"
+				loading="lazy"
+				>
+		</a>
+		
+	</figure></p>
+<p>I also explored the most expensive GPUs, which is completely dominated by the TITAN V. 12 GB of memory size, 1460 MHz boost clock speed, and uses NVIDIA chipset&hellip; A bit pricey but understandable. Besides that outlier, the most expensive GPUs in our data set (on average) seem to fall into th $620 to $870 range and again, the majority of them are GeForce cards.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>Overall this project had taught me a ton. Learning to understand html code a bit more has been super helpful in also changing some things in my website. Learning how exactly to scrape data off a website was also a lot of fun, trying this out with a deep learning project in Python where I pull reviews and try sentiment analysis on it might be an interesting idea to explore. Cleaning the data&hellip; between this and my work right now I&rsquo;m not sure how much more data cleaning I&rsquo;d want to do for a while, but it&rsquo;s nice to see the end product so that makes it worth it. Exploring these GPUs has been a very interesting project, I didn&rsquo;t realize how many different types of GPUs there are and all the different specs (memory type, clock speed, memory interface, etc.). I&rsquo;ll definitely want to come back to this data eventually and see if some type of model can be built from it, but that will have to be for a later date.</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/r/">R</a>
+        
+            <a href="/tags/web-scraping/">Web Scraping</a>
+        
+    </section>
+
+
+    </footer>
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/tvgoldenage/">
+        
+        
+            <div class="article-image">
+                <img src="/p/tvgoldenage/img/banner.bb5723b5e88ae6499a1e60f6907df47c_hudecf68f3e37c839d885e2939bd226e89_152575_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="tvgoldenage" 
+                        data-hash="md5-u1cjteiK5kmaHmD2kH30fA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">#tidytuesday: TV&#39;s Golden Age</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/braintumor/">
+        
+        
+            <div class="article-image">
+                <img src="/p/braintumor/images/banner.53ef3a151262bedf49f76482506b45e4_hu9eb6ca4c1784edf324c9c2921bdfab7c_1375483_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="braintumor" 
+                        data-hash="md5-U&#43;86FRJivt9J92SCUGtF5A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Brain Tumor Detection using SageMaker &amp; TensorFlow</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/strokeprediction/">
+        
+        
+            <div class="article-image">
+                <img src="/p/strokeprediction/img/header.8d5fc9f40277fc2e6277efd5be0a402e_hucdbe1c766fbb076b014b35afd7dcfcdc_900878_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="strokeprediction" 
+                        data-hash="md5-jV/J9AJ3/C5id&#43;/VvgpALg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Stroke Prediction: Battle of the Learning Methods</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/prodvspop/">
+        
+        
+            <div class="article-image">
+                <img src="/p/prodvspop/img/banner.44fe4c762e3c9a637a486dde25ff5ab3_hu2fba2ac787967c0d994b01819822a76b_1268585_250x150_fill_box_smart1_2.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="prodvspop" 
+                        data-hash="md5-RP5Mdi48mmN6SG3eJf9asw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Global Food Production vs. Population: Predicting the Future</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2021 Derek Helms
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="2.3.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
