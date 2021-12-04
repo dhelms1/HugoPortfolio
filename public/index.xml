@@ -6,7 +6,20 @@
         <description>Recent content on Derek Helms</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Tue, 29 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Mon, 08 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>The Basic Needs Student Success Survey (BNS3) Website</title>
+        <link>/p/bns3website/</link>
+        <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+        
+        <guid>/p/bns3website/</guid>
+        <description>&lt;img src="/p/bns3website/img/banner.jpg" alt="Featured image of post The Basic Needs Student Success Survey (BNS3) Website" /&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://chicocalfresh.github.io/bns-pilot2-website/index.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Official Website&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&#34;to-be-filled-in&#34;&gt;To be filled in&amp;hellip;&lt;/h1&gt;
+</description>
+        </item>
+        <item>
         <title>Web Scraping GPU Information with Rvest</title>
         <link>/p/gpuscraping/</link>
         <pubDate>Tue, 29 Jun 2021 00:00:00 +0000</pubDate>
@@ -51,7 +64,7 @@
              &lt;span class=&#34;s&#34;&gt;&amp;#39;NumberOfRatings&amp;#39;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;read_html&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;gpu_link&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;%&amp;gt;%&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;html_nodes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;.product-rating .item-rating-num&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;%&amp;gt;%&lt;/span&gt; 
                                     &lt;span class=&#34;nf&#34;&gt;html_text&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;%&amp;gt;%&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;.[1]&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now this&amp;hellip; This was true pain to get working. If only Newegg had a normal rating system like every other website out there. But of course they have to put their ratings as &amp;ldquo;eggs&amp;rdquo;, which is creative I will say, but also made pulling this information ridiculously long. I don&amp;rsquo;t expect the above code to make much sense (it doesn&amp;rsquo;t really to me and I&amp;rsquo;m the one who wrote it), but basically I had to read through the raw data without converting it to readable text using &lt;em&gt;html_text()&lt;/em&gt;. I couldn&amp;rsquo;t just index it either because each rating appeared at a different point for each gpu. However, the work around this was to split the raw data at the &lt;em&gt;rating rating&lt;/em&gt; tag and take the second object, which I then subset ranging from index 10 to 30 to produce this: &lt;code&gt;=&amp;quot;5 out of 5 eggs&amp;quot;&amp;gt;&amp;lt;/&lt;/code&gt;. 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now this&amp;hellip; This was true pain to get working. If only Newegg had a normal rating system like every other website out there. But of course they have to put their ratings as &amp;ldquo;eggs&amp;rdquo;, which is creative I will say, but also made pulling this information ridiculously long. I don&amp;rsquo;t expect the above code to make much sense (it doesn&amp;rsquo;t really to me and I&amp;rsquo;m the one who wrote it), but basically I had to read through the raw data without converting it to readable text using &lt;em&gt;html_text()&lt;/em&gt;. I couldn&amp;rsquo;t just index it either because each rating appeared at a different point for each gpu. However, the work around this was to split the raw data at the &lt;em&gt;rating rating&lt;/em&gt; tag and take the second object, which I then subset ranging from index 10 to 30 to produce this: &lt;code&gt;=&amp;quot;5 out of 5 eggs&amp;quot;&amp;gt;&amp;lt;/&lt;/code&gt;.
 This is an example of rating for a &amp;ldquo;5 star&amp;rdquo; product, which I will now need to clean but that will occur later during the Data Processing section (I probably could have decreased the index range, but I wanted to keep a buffer just in case). Getting the Number of Ratings was much easier, just converting to readable text and taking the first item. I&amp;rsquo;m just glad this part is over, and now we can move onto the Pricing script code.&lt;/p&gt;
 &lt;h2 id=&#34;gpu-pricing&#34;&gt;GPU Pricing&lt;/h2&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span class=&#34;n&#34;&gt;get_gpu_pricing&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;function&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;page_link&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;

@@ -251,7 +251,7 @@
              <span class="s">&#39;NumberOfRatings&#39;</span> <span class="o">=</span> <span class="nf">read_html</span><span class="p">(</span><span class="n">gpu_link</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">html_nodes</span><span class="p">(</span><span class="s">&#34;.product-rating .item-rating-num&#34;</span><span class="p">)</span> <span class="o">%&gt;%</span> 
                                     <span class="nf">html_text</span><span class="p">()</span> <span class="o">%&gt;%</span> <span class="n">.[1]</span><span class="p">)</span>
 <span class="p">}</span>
-</code></pre></div><p>Now this&hellip; This was true pain to get working. If only Newegg had a normal rating system like every other website out there. But of course they have to put their ratings as &ldquo;eggs&rdquo;, which is creative I will say, but also made pulling this information ridiculously long. I don&rsquo;t expect the above code to make much sense (it doesn&rsquo;t really to me and I&rsquo;m the one who wrote it), but basically I had to read through the raw data without converting it to readable text using <em>html_text()</em>. I couldn&rsquo;t just index it either because each rating appeared at a different point for each gpu. However, the work around this was to split the raw data at the <em>rating rating</em> tag and take the second object, which I then subset ranging from index 10 to 30 to produce this: <code>=&quot;5 out of 5 eggs&quot;&gt;&lt;/</code>. 
+</code></pre></div><p>Now this&hellip; This was true pain to get working. If only Newegg had a normal rating system like every other website out there. But of course they have to put their ratings as &ldquo;eggs&rdquo;, which is creative I will say, but also made pulling this information ridiculously long. I don&rsquo;t expect the above code to make much sense (it doesn&rsquo;t really to me and I&rsquo;m the one who wrote it), but basically I had to read through the raw data without converting it to readable text using <em>html_text()</em>. I couldn&rsquo;t just index it either because each rating appeared at a different point for each gpu. However, the work around this was to split the raw data at the <em>rating rating</em> tag and take the second object, which I then subset ranging from index 10 to 30 to produce this: <code>=&quot;5 out of 5 eggs&quot;&gt;&lt;/</code>.
 This is an example of rating for a &ldquo;5 star&rdquo; product, which I will now need to clean but that will occur later during the Data Processing section (I probably could have decreased the index range, but I wanted to keep a buffer just in case). Getting the Number of Ratings was much easier, just converting to readable text and taking the first item. I&rsquo;m just glad this part is over, and now we can move onto the Pricing script code.</p>
 <h2 id="gpu-pricing">GPU Pricing</h2>
 <div class="highlight"><pre class="chroma"><code class="language-r" data-lang="r"><span class="n">get_gpu_pricing</span> <span class="o">&lt;-</span> <span class="nf">function</span><span class="p">(</span><span class="n">page_link</span><span class="p">)</span> <span class="p">{</span>
@@ -520,6 +520,28 @@ This is an example of rating for a &ldquo;5 star&rdquo; product, which I will no
         <h2 class="section-title">Related contents</h2>
         <div class="related-contents">
             <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/bns3website/">
+        
+        
+            <div class="article-image">
+                <img src="/p/bns3website/img/banner.dee65f50c94217970fb3584c983897ab_hu2a03a1fc18e929d4cb37b864f7a98431_145497_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="bns3website" 
+                        data-hash="md5-3uZfUMlCF5cPs1hMmDiXqw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">The Basic Needs Student Success Survey (BNS3) Website</h2>
+        </div>
+    </a>
+</article>
                 
                     
 <article class="has-image">
