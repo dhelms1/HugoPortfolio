@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Authors on Derek Helms</title>
+    <link>https://derekhelms.netlify.app/authors/</link>
+    <description>Recent content in Authors on Derek Helms</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 19 Jan 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://derekhelms.netlify.app/authors/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Derek Helms</title>
+      <link>https://derekhelms.netlify.app/authors/hugo-authors/</link>
+      <pubDate>Wed, 19 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://derekhelms.netlify.app/authors/hugo-authors/</guid>
+      <description>Hello! I&amp;rsquo;m currently a student at Chico State pursuing a Bachelor of Science in Mathematics with an option in Statistics and a minor in Computer Science. I had started out at Sierra Community College in 2015 as a Business major, eventually switching to Accounting and then Computer Science, and finally transferring to Chico State in the Fall of 2019 as a Mathematics major.
+Outside of my education I mainly focus on developing skills in machine learning, applying both what I learn in class and on my own.</description>
+    </item>
+    
+  </channel>
+</rss>
