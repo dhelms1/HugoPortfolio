@@ -1,10 +1,14 @@
 [build]
+command = "hugo"
 publish = "public"
-command = "hugo --gc --minify"
-
 [build.environment]
-HUGO_VERSION = "0.69.0"
+HUGO_VERSION = "0.83.1"
 
-# This is a starter template for Netlify builds. See the following links for more:
-# https://www.netlify.com/docs/continuous-deployment/#deploy-contexts
-# https://www.netlify.com/blog/2017/04/11/netlify-plus-hugo-0.20-and-beyond/
+[context]
+[context.branch-deploy]
+command = "hugo -F -b $DEPLOY_PRIME_URL"
+[context.deploy-preview]
+command = "hugo -F -b $DEPLOY_PRIME_URL"
+[context.production]
+[context.production.environment]
+HUGO_ENV = "production"
