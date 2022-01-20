@@ -2,13 +2,11 @@ baseURL = 'https://derekhelms.netlify.app/'
 languageCode = 'en-us'
 title = "Derek Helms"
 theme = "novela"
-paginate = 8
-
+paginate = 4
 
 [taxonomies]
-author = "authors"
+  author = "authors"
 
 [permalinks]
-post = "/p/:slug/"
-page = "/:slug/"
-
+  post = "/p/:slug/"
+  page = "/:slug/"
