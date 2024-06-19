@@ -3,6 +3,7 @@ title: Derek Helms
 bio: Recent graduate student at Oregon State University, MS in Artificial Intelligence. Click here to learn more about me!
 avatar: /images/avatar.jpg
 featured: true
+math: mathjax
 ---
 
 Hello! I am a recent grad student from Oregon State University, where I obtained my MS in Artificial Intelligence. I had started my journey at Sierra Community College in 2015 as a Business major, eventually switching to Accounting, and then Computer Science, and finally transferring to Chico State in the Fall of 2019. While at Chico I completed my B.S. in Mathematics (Statistics focused) and a minor in Computer Science, graduating in May 2022. Following this I continued my education into grad school to study in the field of Artificial Intelligence, and recently graduated in June 2024.

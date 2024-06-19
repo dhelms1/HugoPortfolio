@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="{{ $prism.RelPermalink }}" />
     <link href="https://fonts.googleapis.com/css?family=Merriweather&display=swap" rel="stylesheet">
     {{ partial "seo/print.html" . }}
+    {{ if (eq $.Page.Params.math "katex") }}
+      {{ partial "helpers/katex.html" . }}
+    {{ else if (eq $.Page.Params.math "mathjax") }}
+      {{ partial "helpers/mathjax.html" . }}
+    {{end}}
     {{ with .Params.forestry_instant_preview_id }}
       {{- safeHTML (printf "<meta property='forestry_instant_preview_id' content='%s'>" .) -}}
     {{ end -}}
