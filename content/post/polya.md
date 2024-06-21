@@ -123,7 +123,7 @@ Specifically, for our problem of $k \in \{1, 2\}$, we implement:
   \end{align*}
 {{< /math >}}
 
-# Method of Moments
+## Method of Moments
 For the beta-binomial distribution, via Wikipedia, the first moment ($\mu_1$) and second moment ($\mu_2$) based on $n_1$ are given as follows:
 $$ \mu_1 = \frac{n_1\alpha_1}{\alpha_1 + \alpha_2}$$ 
 $$\mu_2 = \frac{n_1 \alpha_1 (n_1 (1 + \alpha_1) + \alpha_2)}{(\alpha_1 + \alpha_2) (\alpha_1 + \alpha_2 + 1)} $$
